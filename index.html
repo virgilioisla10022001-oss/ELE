@@ -4,698 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dela Cruz Store Inventory Management System</title>
-
-    <!-- CDN FOR PDF GENERATION -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
+    
     <style>
-        :root {
-            --bg-color: linear-gradient(rgba(0, 30, 70, 0.9), rgba(0, 30, 70, 0.9));
-            --primary-color: #004080;
-            --primary-hover: #002b5c;
-            --text-color: white;
-            --card-bg: rgba(255, 255, 255, 0.05);
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #001e46;
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 980px;
-            background: rgba(0, 20, 50, 0.85);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            box-sizing: border-box;
-            margin: 20px;
-        }
-
-        h1, h2, h3, h4 {
-            text-align: center;
-            color: white;
-        }
-
-        .section-title {
-            font-size: 36px !important;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-align: left;
-            color: white;
-        }
-
-        hr {
-            border: 0;
-            height: 1px;
-            background: rgba(255, 255, 255, 0.3);
-            margin: 20px 0;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        select option {
-            background-color: #111111;
-            color: #ffffff;
-            padding: 10px;
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: #d0e8ff;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: var(--primary-color);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 15px;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-            border-color: #ffffff;
-        }
-
-        .btn-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Tabs Style */
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-            padding-bottom: 12px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 12px 14px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .tab-btn:hover {
-            background: rgba(0, 64, 128, 0.6);
-            border-color: #ffffff;
-        }
-
-        .tab-btn.active {
-            background: var(--primary-color);
-            font-weight: bold;
-            border-color: #ffffff;
-        }
-
-        /* Tables & Cards with Column Width Control */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 5px;
-            font-size: 13px;
-            table-layout: fixed;
-        }
-
-        th, td {
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 8px 6px;
-            text-align: left;
-            word-wrap: break-word;
-            overflow: hidden;
-            vertical-align: middle;
-        }
-
-        th {
-            background: rgba(0, 64, 128, 0.6);
-        }
-
-        .scrollable-table-box {
-            max-height: 220px;
-            overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .metric-card {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-        }
-
-        .alert-msg {
-            padding: 10px;
-            margin-top: 10px;
-            border-radius: 5px;
-            text-align: center;
-            font-size: 14px;
-        }
-        .success { background: rgba(0, 128, 0, 0.3); color: #d4edda; }
-        .error { background: rgba(128, 0, 0, 0.3); color: #f8d7da; }
-
-        .btn-action {
-            padding: 4px 6px;
-            font-size: 11px;
-            margin-top: 0;
-            width: auto;
-        }
-        .btn-approve { background: #28a745; }
-        .btn-reject, .btn-delete { background: #dc3545; }
-        .btn-edit { background: #ffc107; color: black; }
-
-        .badge-out, .badge-low, .badge-instock, .badge-expired {
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 11px;
-            display: inline-block;
-            white-space: nowrap;
-        }
-        .badge-out { background-color: #dc3545; color: white; }
-        .badge-low { background-color: #ffc107; color: black; }
-        .badge-instock { background-color: #28a745; color: white; }
-        .badge-expired { background-color: #6c757d; color: white; }
-
-        /* PRINTABLE REPORT LAYOUT */
-        #reportPdfPreview {
-            background: #ffffff;
-            color: #000000;
-            padding: 25px;
-            border-radius: 6px;
-            margin-top: 20px;
-        }
-        #reportPdfPreview h2, #reportPdfPreview h3, #reportPdfPreview p {
-            color: #000000;
-            text-align: left;
-        }
-        #reportPdfPreview table {
-            color: #000000;
-            border: 1px solid #333;
-        }
-        #reportPdfPreview th {
-            background: #004080;
-            color: white;
-        }
-        #reportPdfPreview td, #reportPdfPreview th {
-            border: 1px solid #444;
-        }
+        body { font-family: Arial, sans-serif; background: #001e46; color: white; margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 900px; background: rgba(0, 20, 50, 0.9); padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h1, h2 { text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 6px; background: rgba(255, 255, 255, 0.1); color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #004080; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #002b5c; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid rgba(255,255,255,0.2); padding: 8px; text-align: left; }
+        th { background: rgba(0, 64, 128, 0.8); }
+        .hidden { display: none !important; }
+        .alert { padding: 10px; margin-top: 10px; text-align: center; border-radius: 5px; }
+        .success { background: rgba(0, 128, 0, 0.4); }
+        .error { background: rgba(128, 0, 0, 0.4); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="text-align: center;">
-        <h1 style="font-size: 20px; margin: 0;">🛒 DELA CRUZ STORE INVENTORY MANAGEMENT SYSTEM</h1>
-    </div>
+    <h1>🛒 DELA CRUZ STORE INVENTORY SYSTEM</h1>
     <hr>
 
-    <!-- AUTH SECTION -->
+    <!-- LOGIN / REGISTER VIEW -->
     <div id="authSection">
         <div id="loginView">
-            <h2 style="font-size: 36px;">USER LOGIN</h2>
-            <div class="form-group"><label>Username</label><input type="text" id="loginUser" placeholder="Enter your username"></div>
-            <div class="form-group"><label>Password</label><input type="password" id="loginPass" placeholder="Enter your password"></div>
+            <h2>USER LOGIN</h2>
+            <div class="form-group"><label>Username</label><input type="text" id="loginUser"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="loginPass"></div>
             <button onclick="handleLogin()">LOGIN</button>
-            <div class="btn-row" style="margin-top: 15px;">
-                <button onclick="switchAuthView('registerView')" style="background: #002b5c;">Create Account</button>
-                <button onclick="switchAuthView('forgotView')" style="background: #002b5c;">Forgot Password</button>
-            </div>
+            <button onclick="switchView('registerView')" style="background: #002b5c;">Create Account</button>
             <div id="loginAlert"></div>
         </div>
 
         <div id="registerView" class="hidden">
-            <h2 style="font-size: 36px;">CREATE ACCOUNT</h2>
+            <h2>CREATE ACCOUNT</h2>
             <div class="form-group"><label>Full Name</label><input type="text" id="regFullname"></div>
             <div class="form-group"><label>Username</label><input type="text" id="regUser"></div>
             <div class="form-group"><label>Password</label><input type="password" id="regPass"></div>
-            <div class="form-group"><label>Email Address</label><input type="email" id="regEmail"></div>
-            <div class="form-group"><label>Birthday</label><input type="date" id="regBday"></div>
-            <div class="form-group"><label>Contact Number</label><input type="text" id="regContact"></div>
-            <button onclick="handleRegister()">Create Account</button>
-            <button onclick="switchAuthView('loginView')" style="background: #555; margin-top: 10px;">Back to Login</button>
+            <div class="form-group"><label>Email</label><input type="email" id="regEmail"></div>
+            <button onclick="handleRegister()">Submit Registration</button>
+            <button onclick="switchView('loginView')" style="background: #555;">Back to Login</button>
             <div id="regAlert"></div>
-        </div>
-
-        <div id="forgotView" class="hidden">
-            <h2 style="font-size: 36px;">FORGOT PASSWORD</h2>
-            <div class="form-group"><label>Username</label><input type="text" id="forgotUser"></div>
-            <div class="form-group"><label>Email Address</label><input type="email" id="forgotEmail"></div>
-            <div class="form-group"><label>New Password</label><input type="password" id="forgotNewPass"></div>
-            <button onclick="handleResetPassword()">Reset Password</button>
-            <button onclick="switchAuthView('loginView')" style="background: #555; margin-top: 10px;">Back to Login</button>
-            <div id="forgotAlert"></div>
         </div>
     </div>
 
-    <!-- MAIN APP DASHBOARD -->
+    <!-- DASHBOARD / ADMIN VIEW -->
     <div id="appSection" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 id="welcomeUser" style="margin: 0; font-size: 16px;">Welcome</h3>
-            <p id="dateTime" style="margin: 0; font-size: 12px; color: #d0e8ff;"></p>
-        </div>
+        <h3 id="welcomeMsg">Welcome</h3>
+        <button onclick="handleLogout()" style="background: #a94442; width: auto; padding: 5px 15px;">Logout</button>
         <hr>
 
-        <!-- TABS NAVIGATION -->
-        <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('dashboard')">Dashboard</button>
-            <button class="tab-btn" onclick="switchTab('inventory')">Inventory</button>
-            <button class="tab-btn" onclick="switchTab('logs')">Retail</button>
-            <button class="tab-btn" onclick="switchTab('reports')">Reports</button>
-            <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin')">Admin</button>
-            <button class="tab-btn" onclick="switchTab('about')">About</button>
-        </div>
-
-        <!-- TAB 1: DASHBOARD -->
-        <div id="tab-dashboard" class="tab-content">
-            <h2 class="section-title">Dashboard</h2>
-            <div class="metrics-grid">
-                <div class="metric-card"><strong>All Products</strong><br><span id="statTotal" style="font-size: 20px;">0</span></div>
-                <div class="metric-card" style="border-color: orange;"><strong>Low Stock Items</strong><br><span id="statLow" style="font-size: 20px; color: #ffc107;">0</span></div>
-                <div class="metric-card" style="border-color: red;"><strong>Out of Stock Items</strong><br><span id="statOut" style="font-size: 20px; color: #dc3545;">0</span></div>
-            </div>
-
-            <h3 style="font-size: 18px; color: white; text-align: left; margin-bottom: 8px;">Low Stock Items</h3>
-            <div class="scrollable-table-box">
-                <table id="dashLowTable">
-                    <thead><tr><th>Name</th><th>Brand</th><th>Qty</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <h3 style="font-size: 18px; color: white; text-align: left; margin-bottom: 8px;">Out of Stock Items</h3>
-            <div class="scrollable-table-box">
-                <table id="dashOutTable">
-                    <thead><tr><th>Name</th><th>Brand</th><th>Qty</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <h3 style="font-size: 18px; color: white; text-align: left; margin-bottom: 8px;">Nearly Expiring Items (Within 10 Days)</h3>
-            <div class="scrollable-table-box">
-                <table id="dashExpiryTable">
-                    <thead><tr><th>Name</th><th>Brand</th><th>Expiry Date</th><th>Status</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-
-            <h3 style="font-size: 18px; color: white; text-align: left; margin-bottom: 8px;">Latest Products Added</h3>
-            <div class="scrollable-table-box" style="max-height: 200px;">
-                <table id="dashTable">
-                    <thead><tr><th>Name</th><th>Brand</th><th>Qty</th><th>Status</th><th>Date Added</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TAB 2: INVENTORY -->
-        <div id="tab-inventory" class="tab-content hidden">
-            <h2 class="section-title">Inventory</h2>
-            <div id="inventoryLayout" style="display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px;">
-                <div id="addProductCard">
-                    <h4 id="formTitle" style="font-size: 18px; text-align: left;">Add New Product / Restock Request</h4>
-                    <div class="form-group">
-                        <label>Action Type</label>
-                        <select id="actionTypeSelect" onchange="toggleActionTypeForm()">
-                            <option value="new">New Item</option>
-                            <option value="add">Add Items</option>
-                            <option value="restock">Restock</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="selectExistingGroup" class="hidden">
-                        <label>Select Existing Product</label>
-                        <select id="existingProductSelect" onchange="populateExistingProduct()"></select>
-                    </div>
-                    <div class="form-group"><label>Product Name</label><input type="text" id="pName" placeholder="Bear Brand 33g"></div>
-                    <div class="form-group"><label>Brand Name</label><input type="text" id="pBrand" placeholder="Nestlé"></div>
-                    <div class="form-group"><label>Quantity</label><input type="number" id="pQty" value="0" min="0"></div>
-                    <div class="form-group">
-                        <label>Category</label>
-                        <select id="pCat">
-                            <option>All Categories</option>
-                            <option>Beverages & Dairy</option>
-                            <option>Canned & Processed Goods</option>
-                            <option>Snacks, Chips, & Biscuits</option>
-                            <option>Instant & Ready-to-Eat</option>
-                            <option>Cigarettes</option>
-                            <option>Rice, Grains, & Cooking Ingredients</option>
-                            <option>Coffee</option>
-                            <option>Others</option>
-                        </select>
-                    </div>
-                    <div class="form-group"><label>Price (₱)</label><input type="number" id="pPrice" step="0.01" value="0.00"></div>
-                    <div class="form-group"><label>Expiry Date</label><input type="date" id="pExpiry"></div>
-                    <button id="submitProductBtn" onclick="addProduct()">Submit Product</button>
-                </div>
-
-                <div id="searchRecordContainer">
-                    <h4 style="font-size: 18px; text-align: left;">Search & Product Records</h4>
-                    <div class="form-group" style="display: flex; gap: 10px;">
-                        <input type="text" id="searchItem" placeholder="Search product or brand..." onkeyup="filterProducts()" style="flex: 2;">
-                        <select id="filterCategorySelect" onchange="filterProducts()" style="flex: 1;">
-                            <option value="">All Categories</option>
-                            <option>Beverages & Dairy</option>
-                            <option>Canned & Processed Goods</option>
-                            <option>Snacks, Chips, & Biscuits</option>
-                            <option>Instant & Ready-to-Eat</option>
-                            <option>Cigarettes</option>
-                            <option>Rice, Grains, & Cooking Ingredients</option>
-                            <option>Coffee</option>
-                            <option>Others</option>
-                        </select>
-                    </div>
-                    <div class="scrollable-table-box" style="max-height: 400px;">
-                        <table id="invTable" style="table-layout: fixed;">
-                            <colgroup>
-                                <col style="width: 18%;">
-                                <col style="width: 17%;">
-                                <col style="width: 18%;">
-                                <col style="width: 10%;">
-                                <col style="width: 15%;">
-                                <col style="width: 22%;">
-                                <col style="width: 15%;">
-                            </colgroup>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Brand</th>
-                                    <th>Cat</th>
-                                    <th>Qty</th>
-                                    <th>Expiry</th>
-                                    <th>Status</th>
-                                    <th id="actionHeader">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 3: RETAIL -->
-        <div id="tab-logs" class="tab-content hidden">
-            <h2 class="section-title">Retail</h2>
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-                <h4 style="font-size: 18px; text-align: left;">Record Item Sale or Loss (Expired / Defective / Cannot be Sold)</h4>
-                <div class="form-group">
-                    <label>Select Product</label>
-                    <select id="logProductSelect"></select>
-                </div>
-                <div class="form-group">
-                    <label>Log Type</label>
-                    <select id="logTypeSelect">
-                        <option value="Sold">Sold</option>
-                        <option value="Expired">Expired</option>
-                        <option value="Defective">Defective</option>
-                        <option value="Cannot be Sold">Cannot be Sold</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Quantity</label>
-                    <input type="number" id="logQty" value="1" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Notes / Remarks (Optional)</label>
-                    <input type="text" id="logNotes" placeholder="Reason or remarks...">
-                </div>
-                <button id="saveRetailLogBtn" onclick="recordSaleOrLoss()">Save Retail / Loss Log</button>
-            </div>
-
-            <h4 style="font-size: 18px; text-align: left;">Retail & Loss Sales Logs History</h4>
-            <div class="scrollable-table-box" style="max-height: 250px;">
-                <table id="logsTable">
-                    <thead><tr><th>Product</th><th>Brand</th><th>Type</th><th>Qty</th><th>Notes/Status</th><th>Date/Time</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TAB 4: REPORTS -->
-        <div id="tab-reports" class="tab-content hidden">
-            <h2 class="section-title">Reports</h2>
-            <div style="display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-end;">
-                <div style="flex: 1;">
-                    <label>Select Report Period Type</label>
-                    <select id="reportTypeSelect">
-                        <option value="Weekly">Weekly Summary Report</option>
-                        <option value="Monthly">Monthly Summary Report</option>
-                    </select>
-                </div>
-                <div style="flex: 1;">
-                    <button onclick="generateReport()" style="background: #28a745; margin-top:0;">Generate & View Report</button>
-                </div>
-            </div>
-
-            <!-- INVENTORY SUMMARY BAR GRAPH -->
-            <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; margin-bottom: 20px;">
-                <h4 style="font-size: 16px; text-align: left; color: white;">Inventory Summary Chart</h4>
-                <div id="inventoryBarGraph" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
-            </div>
-
-            <div id="reportPreviewContainer" class="hidden">
-                <div class="btn-row" style="margin-top: 15px;">
-                    <button onclick="exportReportToPDF()" style="background: #17a2b8;">Download PDF Report</button>
-                    <button onclick="printReportDocument()" style="background: #6c757d;">Print Report</button>
-                </div>
-
-                <div id="reportPdfPreview">
-                    <h2 style="margin: 0; font-size: 18px; text-transform: uppercase;" id="pdfReportTitle">WEEKLY INVENTORY REPORT</h2>
-                    <p style="margin: 5px 0 15px 0; font-size: 12px; color: #555;" id="pdfReportMeta"></p>
-                    <hr style="background:#ccc; height:1px;">
-
-                    <h3 style="font-size: 14px; margin-bottom: 5px;">Inventory Summary</h3>
-                    <table style="width: 100%; margin-bottom: 15px;">
-                        <thead><tr><th>Total Listed Products</th><th>Low Stock Items</th><th>Out of Stock Items</th></tr></thead>
-                        <tbody><tr><td id="pdfTotalProd">0</td><td id="pdfLowStock">0</td><td id="pdfOutStock">0</td></tr></tbody>
-                    </table>
-
-                    <h3 style="font-size: 14px; margin-bottom: 5px;">Loss & Removal Summary (Removed, Expired, Defective, Cannot be Sold)</h3>
-                    <table style="width: 100%; margin-bottom: 15px;" id="pdfLossSummaryTable">
-                        <thead><tr><th>Item Name</th><th>Brand</th><th>Loss Type / Reason</th><th>Qty</th><th>Date</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-
-                    <h3 style="font-size: 14px; margin-bottom: 5px;">Current Inventory Item Details</h3>
-                    <table id="pdfInventoryDetailsTable">
-                        <thead><tr><th>Product Name</th><th>Brand</th><th>Category</th><th>Qty</th><th>Price</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <h4 style="font-size: 18px; text-align: left; margin-top: 25px;">Generated Reports History</h4>
-            <table id="reportsHistoryTable">
-                <thead><tr><th>Date</th><th>Period Type</th><th>Generated By</th><th>Action</th></tr></thead>
-                <tbody></tbody>
+        <div id="adminPanel" class="hidden">
+            <h2>Admin Panel: Pending Accounts</h2>
+            <table>
+                <thead><tr><th>Full Name</th><th>Username</th><th>Email</th><th>Action</th></tr></thead>
+                <tbody id="pendingTableBody"><tr><td colspan="4" style="text-align:center;">No pending accounts.</td></tr></tbody>
             </table>
         </div>
 
-        <!-- TAB 5: ADMIN / REQUESTS -->
-        <div id="tab-admin" class="tab-content hidden">
-            <h2 class="section-title" id="adminTabMainHeader">Admin Panel</h2>
-            <div id="adminLockView">
-                <h4 style="font-size: 18px; color: #ffc107; text-align: left;">Personal Admin Passcode Required</h4>
-                <p style="font-size: 13px;">Enter your unique Personal Admin Passcode to open the panel.</p>
-                <div class="form-group"><label>Admin Passcode</label><input type="password" id="adminPassInput" placeholder="Enter Your Admin Passcode"></div>
-                <button onclick="unlockAdminAccess()">UNLOCK ADMIN PANEL</button>
-            </div>
-
-            <!-- ASSOCIATE VIEW -->
-            <div id="associateRequestsView" class="hidden">
-                <p style="font-size: 13px; color: #d0e8ff;">Here you can track whether your submitted item requests are Pending, Approved, or Rejected.</p>
-                
-                <h4 style="font-size: 16px; color: white; text-align: left; margin-top: 15px;">Pending Restock Requests</h4>
-                <div class="scrollable-table-box">
-                    <table id="assocPendingTable">
-                        <thead><tr><th>Product Name</th><th>Brand</th><th>Qty</th><th>Price</th><th>Date Submitted</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 16px; color: white; text-align: left; margin-top: 15px;">Pending Retail / Loss Logs Requests</h4>
-                <div class="scrollable-table-box">
-                    <table id="assocPendingRetailTable">
-                        <thead><tr><th>Product Name</th><th>Brand</th><th>Log Type</th><th>Qty</th><th>Notes</th><th>Date Submitted</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 16px; color: white; text-align: left; margin-top: 15px;">Approved Requests History</h4>
-                <div class="scrollable-table-box">
-                    <table id="assocApprovedTable">
-                        <thead><tr><th>Product Name</th><th>Brand</th><th>Qty</th><th>Approved By</th><th>Notes</th><th>Date Approved</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 16px; color: white; text-align: left; margin-top: 15px;">Rejected Requests History</h4>
-                <div class="scrollable-table-box">
-                    <table id="assocRejectedTable">
-                        <thead><tr><th>Product Name</th><th>Brand</th><th>Qty</th><th>Reason</th><th>Date Rejected</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- PROTECTED ADMIN / OWNER CONTENT -->
-            <div id="adminContentView" class="hidden">
-                <h4 style="font-size: 18px; color: white; text-align: left;">Pending Account Approvals</h4>
-                <div class="scrollable-table-box">
-                    <table id="approvalTable">
-                        <thead><tr><th>Full Name</th><th>Username</th><th>Email</th><th>Action</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Pending Staff Restock / Add Requests</h4>
-                <div class="scrollable-table-box">
-                    <table id="restockRequestTable">
-                        <thead><tr><th>Staff Member</th><th>Name</th><th>Brand</th><th>Qty</th><th>Price</th><th>Action</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Pending Staff Retail / Loss Log Requests</h4>
-                <div class="scrollable-table-box">
-                    <table id="retailRequestTable">
-                        <thead><tr><th>Staff Member</th><th>Product Name</th><th>Brand</th><th>Log Type</th><th>Qty</th><th>Notes</th><th>Action</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Approved Restock & Request Logs</h4>
-                <div class="scrollable-table-box">
-                    <table id="approvedLogTable">
-                        <thead><tr><th>Type</th><th>Details / Item</th><th>Requested By</th><th>Approved By</th><th>Date/Time</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Manage User & Staff Accounts</h4>
-                <p style="font-size: 13px;">There is strictly only one Owner. Admins can view Full Name, Username, and Email of the Owner, but cannot edit or change the Owner's details. Admins can fully view and edit Associate details (Full Name, Username, Email, Password).</p>
-                <div class="scrollable-table-box">
-                    <table id="usersTable">
-                        <thead><tr><th>Full Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-
-                <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Active Session Info</h4>
-                <div class="form-group"><label>Full Name</label><input type="text" id="adminName" disabled></div>
-                <div class="form-group"><label>Username</label><input type="text" id="adminUser" disabled></div>
-                <div class="form-group"><label>Role</label><input type="text" id="adminRoleDisplay" disabled></div>
-
-                <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Change My Personal Admin Passcode</h4>
-                <div class="form-group"><label>Old Passcode</label><input type="password" id="oldAdminPass"></div>
-                <div class="form-group"><label>New Passcode</label><input type="password" id="newAdminPass"></div>
-                <div class="form-group"><label>Confirm New Passcode</label><input type="password" id="confirmAdminPass"></div>
-                <button onclick="changeAdminPassword()" style="background: #17a2b8;">UPDATE MY PASSCODE</button>
-
-                <br><br>
-                <button onclick="lockAdminAccess()" style="background: #6c757d; margin-top: 10px;">Lock Admin Panel</button>
-            </div>
-        </div>
-
-        <!-- TAB 6: ABOUT -->
-        <div id="tab-about" class="tab-content hidden">
-            <h2 class="section-title">About the System</h2>
-            <p><strong>Dela Cruz Store Inventory Management System</strong></p>
-            <p>Designed to support family-owned retail establishments in managing product inventory, tracking retail logs, monitoring stock levels, and generating reports.</p>
-        </div>
-
-        <button onclick="handleLogout()" style="background: #a94442; margin-top: 30px;">EXIT / LOGOUT SYSTEM</button>
-    </div>
-</div>
-
-<!-- EDIT USER MODAL -->
-<div id="editUserModal" class="hidden" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; justify-content:center; align-items:center; z-index:1000;">
-    <div style="background:#001e46; padding:25px; border-radius:10px; width:400px; border:1px solid rgba(255,255,255,0.3); max-height: 90vh; overflow-y: auto;">
-        <h4 style="color:#ffc107; margin-top:0; font-size:18px;">Edit User Account & Credentials</h4>
-        <input type="hidden" id="editOldUsernameKey">
-        <div class="form-group"><label>Full Name</label><input type="text" id="editFullname"></div>
-        <div class="form-group"><label>Username</label><input type="text" id="editUsername"></div>
-        <div class="form-group" id="groupEditEmail"><label>Email</label><input type="email" id="editEmail"></div>
-        <div class="form-group" id="groupEditPassword"><label>Login Password</label><input type="text" id="editPassword"></div>
-        <div class="form-group" id="groupEditAdminPasscode"><label>Personal Admin Passcode</label><input type="text" id="editAdminPasscode"></div>
-        <div class="form-group" id="groupEditRole"><label>Account Role</label>
-            <select id="editRole">
-                <option value="owner">Owner (Full Permissions)</option>
-                <option value="admin">Admin</option>
-                <option value="associate">Staff / Associate</option>
-            </select>
-        </div>
-        <div class="form-group" id="groupEditStatus"><label>Account Status</label>
-            <select id="editStatus">
-                <option value="approved">Approved</option>
-                <option value="pending">Pending</option>
-                <option value="rejected">Rejected</option>
-            </select>
-        </div>
-        <div class="btn-row">
-            <button onclick="saveEditedUser()" style="background:#28a745;">Save Changes</button>
-            <button onclick="closeEditModal()" style="background:#dc3545;">Cancel</button>
+        <div id="staffPanel" class="hidden">
+            <h2>Staff Portal</h2>
+            <p>Your account is active. Waiting for admin approval.</p>
         </div>
     </div>
 </div>
 
-<!-- FIREBASE SDK CDN SETUP -->
+<!-- FIREBASE SDK & APP LOGIC -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-analytics.js";
+    import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyA6AxuCzAs1TePvX43-cBBfe_H6_35d53A",
@@ -708,854 +89,119 @@
       measurementId: "G-LCGJ04G9L1"
     };
 
-    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-</script>
+    const db = getDatabase(app);
 
-<script>
-    if (!localStorage.getItem('users')) {
-        const defaultAccounts = [
-            { fullname: "Nomer Bueno", username: "Engr.NBueno", password: "ownerpassword", adminPasscode: "0987654321", email: "EngineernBueno@gmail.com", status: "approved", role: "owner" },
-            { fullname: "virgilio isla", username: "ilyong123", password: "adminpassword", adminPasscode: "123456789", email: "ilyong.isla.7@gmail.com", status: "approved", role: "admin" },
-            { fullname: "John Mico Inocencio", username: "JMInocencio", password: "associatepassword", adminPasscode: "123456789", email: "johnmico@gmail.com", status: "approved", role: "associate" }
-        ];
-        localStorage.setItem('users', JSON.stringify(defaultAccounts));
-    }
-
-    if (!localStorage.getItem('products')) {
-        const defaultProducts = [
-            { id: 101, name: "Bear Brand Powdered Milk 33g", brand: "Nestlé", qty: 15, maxQty: 100, cat: "Beverages & Dairy", price: 18.00, expiry: "2027-05-10", dateAdded: "2026-10-20" },
-            { id: 102, name: "San Mig Super Coffee 3in1", brand: "San Miguel", qty: 4, maxQty: 50, cat: "Coffee", price: 8.50, expiry: "2026-10-26", dateAdded: "2026-10-21" },
-            { id: 103, name: "Century Tuna Flakes in Oil 180g", brand: "Century Pacific", qty: 0, maxQty: 40, cat: "Canned & Processed Goods", price: 42.00, expiry: "2027-08-30", dateAdded: "2026-10-18" }
-        ];
-        localStorage.setItem('products', JSON.stringify(defaultProducts));
-    }
-
-    if (!localStorage.getItem('restockRequests')) localStorage.setItem('restockRequests', JSON.stringify([]));
-    if (!localStorage.getItem('retailRequests')) localStorage.setItem('retailRequests', JSON.stringify([]));
-    if (!localStorage.getItem('approvedRestockHistory')) localStorage.setItem('approvedRestockHistory', JSON.stringify([]));
-    if (!localStorage.getItem('rejectedRestockHistory')) localStorage.setItem('rejectedRestockHistory', JSON.stringify([]));
-    if (!localStorage.getItem('approvedLogs')) localStorage.setItem('approvedLogs', JSON.stringify([]));
-    if (!localStorage.getItem('logs')) localStorage.setItem('logs', JSON.stringify([]));
-    if (!localStorage.getItem('reportsHistory')) localStorage.setItem('reportsHistory', JSON.stringify([]));
-    if (!localStorage.getItem('inventoryLossHistory')) localStorage.setItem('inventoryLossHistory', JSON.stringify([]));
-
-    let currentUser = null;
-    let isAdminUnlocked = false;
-
-    setInterval(() => {
-        const now = new Date();
-        const timeStr = now.toISOString().slice(0, 19).replace('T', ' ');
-        const dtEl = document.getElementById('dateTime');
-        if(dtEl) dtEl.textContent = timeStr;
-    }, 1000);
-
-    function isItemExpired(expiryDate) {
-        if (!expiryDate) return false;
-        const today = new Date().toISOString().slice(0, 10);
-        return expiryDate < today;
-    }
-
-    function isItemNearlyExpired(expiryDate) {
-        if (!expiryDate) return false;
-        const today = new Date();
-        const exp = new Date(expiryDate);
-        const diffTime = exp - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays >= 0 && diffDays <= 10;
-    }
-
-    function getStockBadgeHTML(p) {
-        if (isItemExpired(p.expiry)) {
-            return `<span class="badge-expired">Expired</span>`;
+    // Default Seed Data to Cloud Database if empty
+    const dbRef = ref(db);
+    get(child(dbRef, 'users')).then((snapshot) => {
+        if (!snapshot.exists()) {
+            set(ref(db, 'users'), [
+                { fullname: "Nomer Bueno", username: "Engr.NBueno", password: "ownerpassword", email: "EngineernBueno@gmail.com", status: "approved", role: "owner" },
+                { fullname: "virgilio isla", username: "ilyong123", password: "adminpassword", email: "ilyong.isla.7@gmail.com", status: "approved", role: "admin" }
+            ]);
         }
-        if (p.qty === 0) {
-            return `<span class="badge-out">Out of Stock</span>`;
-        }
-        let max = p.maxQty ? p.maxQty : 20;
-        let percentage = (p.qty / max) * 100;
-        if (percentage <= 15 || p.qty <= 5) {
-            return `<span class="badge-low">Low Stock (${p.qty})</span>`;
-        } else {
-            return `<span class="badge-instock">In Stock</span>`;
-        }
-    }
+    });
 
-    function switchAuthView(viewId) {
+    let cloudUsers = [];
+    
+    // Realtime listener to sync users automatically across devices
+    onValue(ref(db, 'users'), (snapshot) => {
+        cloudUsers = snapshot.val() || [];
+        renderAdminApprovals();
+    });
+
+    window.switchView = function(viewId) {
         document.getElementById('loginView').classList.add('hidden');
         document.getElementById('registerView').classList.add('hidden');
-        document.getElementById('forgotView').classList.add('hidden');
         document.getElementById(viewId).classList.remove('hidden');
     }
 
-    function showAlert(elementId, msg, isSuccess) {
-        const el = document.getElementById(elementId);
-        el.className = `alert-msg ${isSuccess ? 'success' : 'error'}`;
-        el.textContent = msg;
-        setTimeout(() => el.textContent = '', 4000);
-    }
-
-    function handleRegister() {
+    window.handleRegister = function() {
         const fullname = document.getElementById('regFullname').value;
         const username = document.getElementById('regUser').value;
         const password = document.getElementById('regPass').value;
         const email = document.getElementById('regEmail').value;
+        
         if(!fullname || !username || !password || !email) {
-            showAlert('regAlert', 'Please fill in all required fields.', false);
+            showAlert('regAlert', 'Please fill all fields.', false);
             return;
         }
-        let users = JSON.parse(localStorage.getItem('users'));
-        if(users.some(u => u.username === username)) {
-            showAlert('regAlert', 'Username already taken.', false);
+
+        if(cloudUsers.some(u => u.username === username)) {
+            showAlert('regAlert', 'Username already exists.', false);
             return;
         }
-        users.push({ fullname, username, password, adminPasscode: '123456789', email, status: 'pending', role: 'associate' });
-        localStorage.setItem('users', JSON.stringify(users));
-        showAlert('regAlert', 'Account registered! Submitted for approval.', true);
-        setTimeout(() => switchAuthView('loginView'), 2000);
+
+        cloudUsers.push({ fullname, username, password, email, status: 'pending', role: 'associate' });
+        set(ref(db, 'users'), cloudUsers).then(() => {
+            showAlert('regAlert', 'Registered successfully! Wait for admin approval.', true);
+            setTimeout(() => switchView('loginView'), 2000);
+        }).catch(err => {
+            showAlert('regAlert', 'Error: ' + err.message, false);
+        });
     }
 
-    function handleLogin() {
+    window.handleLogin = function() {
         const username = document.getElementById('loginUser').value;
         const password = document.getElementById('loginPass').value;
-        let users = JSON.parse(localStorage.getItem('users'));
-        const user = users.find(u => u.username === username && u.password === password);
+
+        const user = cloudUsers.find(u => u.username === username && u.password === password);
         if(!user) {
-            showAlert('loginAlert', 'Invalid username or password!', false);
+            showAlert('loginAlert', 'Invalid username or password.', false);
             return;
         }
         if(user.status === 'pending') {
-            showAlert('loginAlert', 'Account awaiting approval.', false);
+            showAlert('loginAlert', 'Your account is still pending approval.', false);
             return;
         }
-        if(user.status === 'rejected') {
-            showAlert('loginAlert', 'Account application rejected.', false);
-            return;
-        }
-        currentUser = user;
-        isAdminUnlocked = false;
+
         document.getElementById('authSection').classList.add('hidden');
         document.getElementById('appSection').classList.remove('hidden');
-        document.getElementById('welcomeUser').textContent = `Welcome, ${user.fullname} (${user.role.toUpperCase()})`;
-        applyRolePermissions();
-        refreshAppData();
-    }
+        document.getElementById('welcomeMsg').textContent = `Welcome, ${user.fullname} (${user.role.toUpperCase()})`;
 
-    function applyRolePermissions() {
-        const adminTabBtn = document.getElementById('adminTabBtn');
-        const adminMainHeader = document.getElementById('adminTabMainHeader');
-        const saveRetailLogBtn = document.getElementById('saveRetailLogBtn');
-
-        if (currentUser && currentUser.role === 'associate') {
-            document.getElementById('formTitle').textContent = 'Request Item Restock / Add';
-            document.getElementById('submitProductBtn').textContent = 'Submit Request to Admin';
-            if(saveRetailLogBtn) saveRetailLogBtn.textContent = 'Submit Retail / Loss Log Request to Admin';
-            if(adminTabBtn) adminTabBtn.textContent = 'Request';
-            if(adminMainHeader) adminMainHeader.textContent = 'Request';
+        if(user.role === 'owner' || user.role === 'admin') {
+            document.getElementById('adminPanel').classList.remove('hidden');
+            renderAdminApprovals();
         } else {
-            document.getElementById('formTitle').textContent = 'Add New Product / Restock';
-            document.getElementById('submitProductBtn').textContent = 'Submit Product Directly';
-            if(saveRetailLogBtn) saveRetailLogBtn.textContent = 'Save Retail / Loss Log';
-            if(adminTabBtn) adminTabBtn.textContent = 'Admin';
-            if(adminMainHeader) adminMainHeader.textContent = 'Admin Panel';
-        }
-        toggleActionTypeForm();
-    }
-
-    function toggleActionTypeForm() {
-        const type = document.getElementById('actionTypeSelect').value;
-        const selectGroup = document.getElementById('selectExistingGroup');
-        const nameInput = document.getElementById('pName');
-        const brandInput = document.getElementById('pBrand');
-        const catSelect = document.getElementById('pCat');
-
-        if (type === 'new') {
-            selectGroup.classList.add('hidden');
-            nameInput.value = '';
-            brandInput.value = '';
-            nameInput.disabled = false;
-            brandInput.disabled = false;
-            catSelect.disabled = false;
-        } else {
-            selectGroup.classList.remove('hidden');
-            nameInput.disabled = true;
-            brandInput.disabled = true;
-            catSelect.disabled = true;
-            loadExistingProductsDropdown();
+            document.getElementById('staffPanel').classList.remove('hidden');
         }
     }
 
-    function loadExistingProductsDropdown() {
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let select = document.getElementById('existingProductSelect');
-        select.innerHTML = '';
-        products.forEach(p => {
-            select.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Qty: ${p.qty}</option>`;
+    function renderAdminApprovals() {
+        const tbody = document.getElementById('pendingTableBody');
+        if(!tbody) return;
+        tbody.innerHTML = '';
+        const pending = cloudUsers.filter(u => u.status === 'pending');
+        if(pending.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No pending accounts.</td></tr>`;
+            return;
+        }
+        pending.forEach((u) => {
+            const index = cloudUsers.findIndex(item => item.username === u.username);
+            tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td>${u.email}</td><td><button onclick="approveUser(${index})" style="padding: 5px; width:auto; background:#28a745;">Approve</button></td></tr>`;
         });
-        if(products.length > 0) populateExistingProduct();
     }
 
-    function populateExistingProduct() {
-        const id = document.getElementById('existingProductSelect').value;
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let p = products.find(prod => prod.id == id);
-        if (p) {
-            document.getElementById('pName').value = p.name;
-            document.getElementById('pBrand').value = p.brand;
-            document.getElementById('pCat').value = p.cat;
-            document.getElementById('pPrice').value = p.price;
-        }
+    window.approveUser = function(index) {
+        cloudUsers[index].status = 'approved';
+        set(ref(db, 'users'), cloudUsers).then(() => {
+            alert('Account approved successfully!');
+        });
     }
 
-    function handleResetPassword() {
-        const username = document.getElementById('forgotUser').value;
-        const email = document.getElementById('forgotEmail').value;
-        const newPass = document.getElementById('forgotNewPass').value;
-        let users = JSON.parse(localStorage.getItem('users'));
-        let user = users.find(u => u.username === username && u.email === email);
-        if(user) {
-            user.password = newPass;
-            localStorage.setItem('users', JSON.stringify(users));
-            showAlert('forgotAlert', 'Password reset successfully!', true);
-            setTimeout(() => switchAuthView('loginView'), 1500);
-        } else {
-            showAlert('forgotAlert', 'Username and Email do not match.', false);
-        }
-    }
-
-    function handleLogout() {
-        currentUser = null;
-        isAdminUnlocked = false;
+    window.handleLogout = function() {
         document.getElementById('appSection').classList.add('hidden');
         document.getElementById('authSection').classList.remove('hidden');
-        switchAuthView('loginView');
+        document.getElementById('adminPanel').classList.add('hidden');
+        document.getElementById('staffPanel').classList.add('hidden');
     }
 
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-        if (event && event.target) event.target.classList.add('active');
-        if (tabName === 'admin') checkAdminViewStatus();
-    }
-
-    function unlockAdminAccess() {
-        if (!currentUser) return;
-        if (currentUser.role !== 'owner' && currentUser.role !== 'admin') {
-            alert('Access Denied.');
-            return;
-        }
-        const inputKey = document.getElementById('adminPassInput').value;
-        const userPasscode = currentUser.adminPasscode || '123456789';
-        if(inputKey === userPasscode) {
-            isAdminUnlocked = true;
-            document.getElementById('adminPassInput').value = '';
-            checkAdminViewStatus();
-        } else {
-            alert('Incorrect Admin Passcode!');
-        }
-    }
-
-    function lockAdminAccess() {
-        isAdminUnlocked = false;
-        checkAdminViewStatus();
-    }
-
-    function checkAdminViewStatus() {
-        if (!currentUser) return;
-        if (currentUser.role === 'associate') {
-            document.getElementById('adminLockView').classList.add('hidden');
-            document.getElementById('adminContentView').classList.add('hidden');
-            document.getElementById('associateRequestsView').classList.remove('hidden');
-            renderAssociateRequestHistory();
-            return;
-        }
-        document.getElementById('associateRequestsView').classList.add('hidden');
-        if (isAdminUnlocked) {
-            document.getElementById('adminLockView').classList.add('hidden');
-            document.getElementById('adminContentView').classList.remove('hidden');
-            loadAdminInfo();
-            renderPendingApprovals();
-            renderRestockRequests();
-            renderRetailRequests();
-            renderApprovedLogsTable();
-            renderAllUsersTable();
-        } else {
-            document.getElementById('adminLockView').classList.remove('hidden');
-            document.getElementById('adminContentView').classList.add('hidden');
-        }
-    }
-
-    function renderAssociateRequestHistory() {
-        if (!currentUser) return;
-        const name = currentUser.fullname;
-
-        let allReq = JSON.parse(localStorage.getItem('restockRequests')) || [];
-        let myPending = allReq.filter(r => r.associateName === name);
-        let pendTbody = document.querySelector('#assocPendingTable tbody');
-        pendTbody.innerHTML = '';
-        if(myPending.length === 0) pendTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending restock requests.</td></tr>`;
-        else myPending.forEach(r => pendTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>₱${r.price.toFixed(2)}</td><td>${r.dateAdded}</td></tr>`);
-
-        let allRetailReq = JSON.parse(localStorage.getItem('retailRequests')) || [];
-        let myRetailPending = allRetailReq.filter(r => r.associateName === name);
-        let pendRetailTbody = document.querySelector('#assocPendingRetailTable tbody');
-        pendRetailTbody.innerHTML = '';
-        if(myRetailPending.length === 0) pendRetailTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending retail/loss log requests.</td></tr>`;
-        else myRetailPending.forEach(r => pendRetailTbody.innerHTML += `<tr><td>${r.prodName}</td><td>${r.prodBrand}</td><td>${r.logType}</td><td>${r.qty}</td><td>${r.notes || '-'}</td><td>${r.date}</td></tr>`);
-
-        let allApp = JSON.parse(localStorage.getItem('approvedRestockHistory')) || [];
-        let myApp = allApp.filter(r => r.associateName === name);
-        let appTbody = document.querySelector('#assocApprovedTable tbody');
-        appTbody.innerHTML = '';
-        if(myApp.length === 0) appTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No approved requests.</td></tr>`;
-        else myApp.forEach(r => appTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>${r.approvedBy}</td><td>${r.notes || '-'}</td><td>${r.date}</td></tr>`);
-
-        let allRej = JSON.parse(localStorage.getItem('rejectedRestockHistory')) || [];
-        let myRej = allRej.filter(r => r.associateName === name);
-        let rejTbody = document.querySelector('#assocRejectedTable tbody');
-        rejTbody.innerHTML = '';
-        if(myRej.length === 0) rejTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No rejected requests.</td></tr>`;
-        else myRej.forEach(r => rejTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>${r.reason}</td><td>${r.date}</td></tr>`);
-    }
-
-    function changeAdminPassword() {
-        const oldPass = document.getElementById('oldAdminPass').value;
-        const newPass = document.getElementById('newAdminPass').value;
-        const confirmPass = document.getElementById('confirmAdminPass').value;
-        const userPasscode = currentUser.adminPasscode || '123456789';
-        if (oldPass !== userPasscode || newPass !== confirmPass) {
-            alert('Passcode check failed.');
-            return;
-        }
-        let users = JSON.parse(localStorage.getItem('users'));
-        let u = users.find(usr => usr.username === currentUser.username);
-        if (u) {
-            u.adminPasscode = newPass;
-            currentUser.adminPasscode = newPass;
-            localStorage.setItem('users', JSON.stringify(users));
-            alert('Admin Passcode updated!');
-        }
-    }
-
-    function generateReport() {
-        const periodType = document.getElementById('reportTypeSelect').value;
-        const products = JSON.parse(localStorage.getItem('products')) || [];
-        const lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
-        const now = new Date();
-
-        document.getElementById('pdfReportTitle').textContent = `${periodType.toUpperCase()} INVENTORY & LOSS REPORT`;
-        document.getElementById('pdfReportMeta').textContent = `Generated: ${now.toLocaleString()} | By: ${currentUser ? currentUser.fullname : 'Admin'}`;
-
-        const lowItems = products.filter(p => p.qty > 0 && ((p.qty / (p.maxQty || 20)) * 100 <= 15 || p.qty <= 5));
-        const outItems = products.filter(p => p.qty === 0 || isItemExpired(p.expiry));
-
-        document.getElementById('pdfTotalProd').textContent = products.length;
-        document.getElementById('pdfLowStock').textContent = lowItems.length;
-        document.getElementById('pdfOutStock').textContent = outItems.length;
-
-        let lossTbody = document.querySelector('#pdfLossSummaryTable tbody');
-        lossTbody.innerHTML = '';
-        if(lossHistory.length === 0) {
-            lossTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No loss items recorded.</td></tr>`;
-        } else {
-            lossHistory.forEach(l => {
-                lossTbody.innerHTML += `<tr><td>${l.name}</td><td>${l.brand}</td><td>${l.type} (${l.notes || '-'})</td><td>${l.qty}</td><td>${l.date}</td></tr>`;
-            });
-        }
-
-        let pdfTbody = document.querySelector('#pdfInventoryDetailsTable tbody');
-        pdfTbody.innerHTML = '';
-        products.forEach(p => {
-            pdfTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.cat}</td><td>${p.qty}</td><td>₱${p.price.toFixed(2)}</td></tr>`;
-        });
-
-        document.getElementById('reportPreviewContainer').classList.remove('hidden');
-
-        // Render Bar Graph
-        renderInventoryBarGraph(products);
-
-        let history = JSON.parse(localStorage.getItem('reportsHistory')) || [];
-        history.push({ date: now.toISOString().slice(0, 10), period: periodType, by: currentUser ? currentUser.fullname : 'Admin' });
-        localStorage.setItem('reportsHistory', JSON.stringify(history));
-        renderReportsHistory();
-    }
-
-    function renderInventoryBarGraph(products) {
-        let container = document.getElementById('inventoryBarGraph');
-        container.innerHTML = '';
-        if(products.length === 0) {
-            container.innerHTML = `<p style="font-size:13px; color:#ccc;">No products available for graph.</p>`;
-            return;
-        }
-        products.forEach(p => {
-            let max = p.maxQty || 50;
-            let percent = Math.min(100, Math.round((p.qty / max) * 100));
-            let color = p.qty === 0 ? '#dc3545' : percent <= 15 ? '#ffc107' : '#28a745';
-            container.innerHTML += `
-                <div>
-                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:2px;">
-                        <span>${p.name} (${p.brand})</span>
-                        <span>Qty: ${p.qty}</span>
-                    </div>
-                    <div style="width:100%; background:rgba(255,255,255,0.1); border-radius:4px; height:14px; overflow:hidden;">
-                        <div style="width:${percent}%; background:${color}; height:100%;"></div>
-                    </div>
-                </div>
-            `;
-        });
-    }
-
-    function renderReportsHistory() {
-        let history = JSON.parse(localStorage.getItem('reportsHistory')) || [];
-        let tbody = document.querySelector('#reportsHistoryTable tbody');
-        tbody.innerHTML = '';
-        if(history.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No reports generated yet.</td></tr>`;
-            return;
-        }
-        history.slice(-10).reverse().forEach(r => {
-            tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.period} Report</td><td>${r.by}</td><td><button class="btn-action btn-edit" onclick="exportReportToPDF()">Download PDF</button></td></tr>`;
-        });
-    }
-
-    function exportReportToPDF() {
-        const { jsPDF } = window.jspdf;
-        const element = document.getElementById('reportPdfPreview');
-        html2canvas(element, { scale: 2 }).then(canvas => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(imgData, 'PNG', 10, 10, 190, (canvas.height * 190) / canvas.width);
-            pdf.save(`DelaCruzStore_Report.pdf`);
-        });
-    }
-
-    function printReportDocument() {
-        const win = window.open('', '', 'height=700,width=900');
-        win.document.write('<html><head><title>Print Report</title></head><body>' + document.getElementById('reportPdfPreview').outerHTML + '</body></html>');
-        win.document.close();
-        setTimeout(() => win.print(), 500);
-    }
-
-    function renderPendingApprovals() {
-        let users = JSON.parse(localStorage.getItem('users'));
-        let pending = users.filter(u => u.status === 'pending');
-        let tbody = document.querySelector('#approvalTable tbody');
-        tbody.innerHTML = '';
-        if (pending.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No pending approvals.</td></tr>`;
-            return;
-        }
-        pending.forEach(u => {
-            tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td>${u.email}</td><td><button class="btn-action btn-approve" onclick="approveUser('${u.username}')">Approve</button> <button class="btn-action btn-reject" onclick="rejectUser('${u.username}')">Reject</button></td></tr>`;
-        });
-    }
-
-    function approveUser(username) {
-        let users = JSON.parse(localStorage.getItem('users'));
-        let u = users.find(user => user.username === username);
-        if (u) {
-            u.status = 'approved';
-            localStorage.setItem('users', JSON.stringify(users));
-            renderPendingApprovals();
-            renderAllUsersTable();
-        }
-    }
-
-    function rejectUser(username) {
-        let users = JSON.parse(localStorage.getItem('users'));
-        let u = users.find(user => user.username === username);
-        if (u) {
-            u.status = 'rejected';
-            localStorage.setItem('users', JSON.stringify(users));
-            renderPendingApprovals();
-            renderAllUsersTable();
-        }
-    }
-
-    function renderRestockRequests() {
-        let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
-        let tbody = document.querySelector('#restockRequestTable tbody');
-        tbody.innerHTML = '';
-        if (requests.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending restock requests.</td></tr>`;
-            return;
-        }
-        requests.forEach((req, index) => {
-            tbody.innerHTML += `<tr><td>${req.associateName}</td><td>${req.name}</td><td>${req.brand}</td><td>${req.qty}</td><td>₱${req.price.toFixed(2)}</td><td><button class="btn-action btn-approve" onclick="promptApproveRestock(${index})">Approve</button> <button class="btn-action btn-reject" onclick="promptRejectRestock(${index})">Reject</button></td></tr>`;
-        });
-    }
-
-    function renderRetailRequests() {
-        let requests = JSON.parse(localStorage.getItem('retailRequests')) || [];
-        let tbody = document.querySelector('#retailRequestTable tbody');
-        tbody.innerHTML = '';
-        if (requests.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No pending retail / loss log requests.</td></tr>`;
-            return;
-        }
-        requests.forEach((req, index) => {
-            tbody.innerHTML += `<tr><td>${req.associateName}</td><td>${req.prodName}</td><td>${req.prodBrand}</td><td>${req.logType}</td><td>${req.qty}</td><td>${req.notes || '-'}</td><td><button class="btn-action btn-approve" onclick="approveRetailLogRequest(${index})">Approve</button> <button class="btn-action btn-reject" onclick="rejectRetailLogRequest(${index})">Reject</button></td></tr>`;
-        });
-    }
-
-    function approveRetailLogRequest(index) {
-        let requests = JSON.parse(localStorage.getItem('retailRequests')) || [];
-        let req = requests[index];
-
-        let products = JSON.parse(localStorage.getItem('products'));
-        let prod = products.find(p => p.id == req.prodId);
-
-        if(!prod || prod.qty < req.qty) {
-            alert('Cannot approve: Insufficient stock in inventory.');
-            return;
-        }
-
-        prod.qty -= req.qty;
-        localStorage.setItem('products', JSON.stringify(products));
-
-        let lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
-        lossHistory.push({ name: req.prodName, brand: req.prodBrand, type: req.logType, qty: req.qty, notes: req.notes, date: new Date().toLocaleString() });
-        localStorage.setItem('inventoryLossHistory', JSON.stringify(lossHistory));
-
-        let logs = JSON.parse(localStorage.getItem('logs')) || [];
-        logs.push({ name: req.prodName, brand: req.prodBrand, type: req.logType, qty: req.qty, notes: req.notes || req.logType, date: new Date().toLocaleString() });
-        localStorage.setItem('logs', JSON.stringify(logs));
-
-        addApprovedLog('Retail/Loss Log', `${req.logType} - ${req.prodName} (${req.qty})`, req.associateName);
-
-        let approvedHistory = JSON.parse(localStorage.getItem('approvedRestockHistory')) || [];
-        approvedHistory.push({ associateName: req.associateName, name: req.prodName, brand: req.prodBrand, qty: req.qty, approvedBy: currentUser.fullname, notes: req.notes, date: new Date().toLocaleString() });
-        localStorage.setItem('approvedRestockHistory', JSON.stringify(approvedHistory));
-
-        requests.splice(index, 1);
-        localStorage.setItem('retailRequests', JSON.stringify(requests));
-
-        renderRetailRequests();
-        renderApprovedLogsTable();
-        refreshAppData();
-        alert('Retail/Loss log request approved!');
-    }
-
-    function rejectRetailLogRequest(index) {
-        let reason = prompt("Enter reason for rejection (Required):", "");
-        if (!reason) {
-            alert("Reason is required to reject.");
-            return;
-        }
-
-        let requests = JSON.parse(localStorage.getItem('retailRequests')) || [];
-        let req = requests[index];
-
-        let rejectedHistory = JSON.parse(localStorage.getItem('rejectedRestockHistory')) || [];
-        rejectedHistory.push({ associateName: req.associateName, name: req.prodName, brand: req.prodBrand, qty: req.qty, reason, date: new Date().toLocaleString() });
-        localStorage.setItem('rejectedRestockHistory', JSON.stringify(rejectedHistory));
-
-        requests.splice(index, 1);
-        localStorage.setItem('retailRequests', JSON.stringify(requests));
-
-        renderRetailRequests();
-        alert('Log request rejected.');
-    }
-
-    function promptApproveRestock(index) {
-        let notes = prompt("Enter optional notes for approval:", "");
-        approveRestock(index, notes || '');
-    }
-
-    function promptRejectRestock(index) {
-        let reason = prompt("Enter reason for rejection (Required):", "");
-        if (!reason) {
-            alert("Reason is required to reject a request.");
-            return;
-        }
-        rejectRestock(index, reason);
-    }
-
-    function approveRestock(index, notes) {
-        let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
-        let req = requests[index];
-        let products = JSON.parse(localStorage.getItem('products'));
-        
-        let existing = products.find(p => p.name.toLowerCase() === req.name.toLowerCase());
-        if (existing) {
-            existing.qty += req.qty;
-        } else {
-            products.push({ id: Date.now(), name: req.name, brand: req.brand, qty: req.qty, maxQty: req.qty * 2, cat: req.cat, price: req.price, expiry: req.expiry, dateAdded: req.dateAdded });
-        }
-        localStorage.setItem('products', JSON.stringify(products));
-
-        let approvedHistory = JSON.parse(localStorage.getItem('approvedRestockHistory')) || [];
-        approvedHistory.push({ associateName: req.associateName, name: req.name, brand: req.brand, qty: req.qty, approvedBy: currentUser.fullname, notes, date: new Date().toLocaleString() });
-        localStorage.setItem('approvedRestockHistory', JSON.stringify(approvedHistory));
-
-        addApprovedLog('Restock Request', `Restock - ${req.name} (${req.qty})`, req.associateName);
-
-        requests.splice(index, 1);
-        localStorage.setItem('restockRequests', JSON.stringify(requests));
-        renderRestockRequests();
-        renderApprovedLogsTable();
-        refreshAppData();
-    }
-
-    function rejectRestock(index, reason) {
-        let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
-        let req = requests[index];
-
-        let rejectedHistory = JSON.parse(localStorage.getItem('rejectedRestockHistory')) || [];
-        rejectedHistory.push({ associateName: req.associateName, name: req.name, brand: req.brand, qty: req.qty, reason, date: new Date().toLocaleString() });
-        localStorage.setItem('rejectedRestockHistory', JSON.stringify(rejectedHistory));
-
-        requests.splice(index, 1);
-        localStorage.setItem('restockRequests', JSON.stringify(requests));
-        renderRestockRequests();
-    }
-
-    function addApprovedLog(type, details, requestedBy) {
-        let logs = JSON.parse(localStorage.getItem('approvedLogs')) || [];
-        logs.push({ type, details, requestedBy, approvedBy: currentUser ? currentUser.fullname : 'Admin', date: new Date().toLocaleString() });
-        localStorage.setItem('approvedLogs', JSON.stringify(logs));
-    }
-
-    function renderApprovedLogsTable() {
-        let logs = JSON.parse(localStorage.getItem('approvedLogs')) || [];
-        let tbody = document.querySelector('#approvedLogTable tbody');
-        tbody.innerHTML = '';
-        if(logs.length === 0) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No logs yet.</td></tr>`;
-        else logs.slice(-10).reverse().forEach(l => tbody.innerHTML += `<tr><td>${l.type}</td><td>${l.details}</td><td>${l.requestedBy}</td><td>${l.approvedBy}</td><td>${l.date}</td></tr>`);
-    }
-
-    function renderAllUsersTable() {
-        let users = JSON.parse(localStorage.getItem('users'));
-        let tbody = document.querySelector('#usersTable tbody');
-        tbody.innerHTML = '';
-        users.forEach(u => {
-            let actionBtn = (currentUser.role === 'admin' && u.role === 'owner') ? `<span style="color:#aaa;">Restricted</span>` : `<button class="btn-action btn-edit" onclick="openEditModal('${u.username}')">Edit</button> <button class="btn-action btn-delete" onclick="deleteUserAccount('${u.username}')">Delete</button>`;
-            tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td><strong>${u.role.toUpperCase()}</strong></td><td>${u.status}</td><td>${actionBtn}</td></tr>`;
-        });
-    }
-
-    function openEditModal(username) {
-        let users = JSON.parse(localStorage.getItem('users'));
-        let target = users.find(u => u.username === username);
-        if(!target) return;
-        document.getElementById('editOldUsernameKey').value = target.username;
-        document.getElementById('editFullname').value = target.fullname;
-        document.getElementById('editUsername').value = target.username;
-        document.getElementById('editEmail').value = target.email;
-        document.getElementById('editPassword').value = target.password;
-        document.getElementById('editAdminPasscode').value = target.adminPasscode || '';
-        document.getElementById('editRole').value = target.role;
-        document.getElementById('editStatus').value = target.status;
-        document.getElementById('editUserModal').classList.remove('hidden');
-    }
-
-    function closeEditModal() { document.getElementById('editUserModal').classList.add('hidden'); }
-
-    function saveEditedUser() {
-        let oldKey = document.getElementById('editOldUsernameKey').value;
-        let users = JSON.parse(localStorage.getItem('users'));
-        let target = users.find(u => u.username === oldKey);
-        if (target) {
-            target.fullname = document.getElementById('editFullname').value;
-            target.username = document.getElementById('editUsername').value;
-            target.email = document.getElementById('editEmail').value;
-            target.password = document.getElementById('editPassword').value;
-            localStorage.setItem('users', JSON.stringify(users));
-            closeEditModal();
-            renderAllUsersTable();
-        }
-    }
-
-    function deleteUserAccount(username) {
-        let users = JSON.parse(localStorage.getItem('users'));
-        let target = users.find(u => u.username === username);
-        if (target && target.role === 'owner') { alert('Cannot delete Owner.'); return; }
-        if (confirm('Delete user?')) {
-            users = users.filter(u => u.username !== username);
-            localStorage.setItem('users', JSON.stringify(users));
-            renderAllUsersTable();
-        }
-    }
-
-    function addProduct() {
-        const actionType = document.getElementById('actionTypeSelect').value;
-        const name = document.getElementById('pName').value;
-        const brand = document.getElementById('pBrand').value;
-        const qty = parseInt(document.getElementById('pQty').value) || 0;
-        const cat = document.getElementById('pCat').value;
-        const price = parseFloat(document.getElementById('pPrice').value) || 0;
-        const expiry = document.getElementById('pExpiry').value;
-        const dateAdded = new Date().toISOString().slice(0, 10);
-
-        if(!name) { alert('Enter product name.'); return; }
-
-        if (currentUser && currentUser.role === 'associate') {
-            let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
-            requests.push({ associateName: currentUser.fullname, name, brand, qty, cat, price, expiry, dateAdded });
-            localStorage.setItem('restockRequests', JSON.stringify(requests));
-            alert('Restock request submitted to Admin.');
-        } else {
-            let products = JSON.parse(localStorage.getItem('products'));
-            if (actionType === 'new') {
-                products.push({ id: Date.now(), name, brand, qty, maxQty: qty * 2, cat, price, expiry, dateAdded });
-            } else {
-                let existingId = document.getElementById('existingProductSelect').value;
-                let found = products.find(p => p.id == existingId);
-                if (found) {
-                    if (actionType === 'add') found.qty += qty;
-                    else if (actionType === 'restock') found.qty = qty;
-                    if (expiry) found.expiry = expiry;
-                }
-            }
-            localStorage.setItem('products', JSON.stringify(products));
-            alert('Product inventory updated successfully!');
-        }
-        refreshAppData();
-    }
-
-    function filterProducts() {
-        const query = document.getElementById('searchItem').value.toLowerCase();
-        const catFilter = document.getElementById('filterCategorySelect').value;
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let tbody = document.querySelector('#invTable tbody');
-        tbody.innerHTML = '';
-
-        const filtered = products.filter(p => {
-            const matchQuery = p.name.toLowerCase().includes(query) || p.brand.toLowerCase().includes(query);
-            const matchCat = !catFilter || p.cat === catFilter;
-            return matchQuery && matchCat;
-        });
-
-        if(filtered.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No matching products.</td></tr>`;
-            return;
-        }
-
-        filtered.forEach(p => {
-            const badge = getStockBadgeHTML(p);
-            let actionTd = (currentUser && currentUser.role !== 'associate') ? `<td><button class="btn-action btn-delete" onclick="deleteProduct(${p.id})">Remove</button></td>` : '';
-            tbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.cat}</td><td>${p.qty}</td><td>${p.expiry || '-'}</td><td>${badge}</td>${actionTd}</tr>`;
-        });
-    }
-
-    function deleteProduct(id) {
-        if (currentUser && currentUser.role === 'associate') { alert('Unauthorized.'); return; }
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let idx = products.findIndex(p => p.id === id);
-        if (idx !== -1) {
-            let removed = products.splice(idx, 1)[0];
-            localStorage.setItem('products', JSON.stringify(products));
-
-            let lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
-            lossHistory.push({ name: removed.name, brand: removed.brand, type: 'Removed/Deleted', qty: removed.qty, notes: 'Manual Removal by Admin', date: new Date().toLocaleString() });
-            localStorage.setItem('inventoryLossHistory', JSON.stringify(lossHistory));
-            refreshAppData();
-        }
-    }
-
-    function recordSaleOrLoss() {
-        const prodId = document.getElementById('logProductSelect').value;
-        const logType = document.getElementById('logTypeSelect').value;
-        const qty = parseInt(document.getElementById('logQty').value) || 1;
-        const notes = document.getElementById('logNotes').value;
-
-        let products = JSON.parse(localStorage.getItem('products'));
-        let prod = products.find(p => p.id == prodId);
-
-        if(!prod || prod.qty < qty) {
-            alert('Insufficient stock.');
-            return;
-        }
-
-        if (currentUser && currentUser.role === 'associate') {
-            let retailRequests = JSON.parse(localStorage.getItem('retailRequests')) || [];
-            retailRequests.push({
-                associateName: currentUser.fullname,
-                prodId: prod.id,
-                prodName: prod.name,
-                prodBrand: prod.brand,
-                logType,
-                qty,
-                notes: notes || logType,
-                date: new Date().toLocaleString()
-            });
-            localStorage.setItem('retailRequests', JSON.stringify(retailRequests));
-            alert('Retail/Loss log request submitted to Admin/Owner for approval.');
-        } else {
-            prod.qty -= qty;
-            localStorage.setItem('products', JSON.stringify(products));
-
-            let lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
-            lossHistory.push({ name: prod.name, brand: prod.brand, type: logType, qty, notes, date: new Date().toLocaleString() });
-            localStorage.setItem('inventoryLossHistory', JSON.stringify(lossHistory));
-
-            let logs = JSON.parse(localStorage.getItem('logs')) || [];
-            logs.push({ name: prod.name, brand: prod.brand, type: logType, qty, notes: notes || logType, date: new Date().toLocaleString() });
-            localStorage.setItem('logs', JSON.stringify(logs));
-
-            alert('Retail/Loss logged successfully!');
-        }
-
-        refreshAppData();
-    }
-
-    function refreshAppData() {
-        let products = JSON.parse(localStorage.getItem('products')) || [];
-        let logs = JSON.parse(localStorage.getItem('logs')) || [];
-
-        const lowItems = products.filter(p => p.qty > 0 && !isItemExpired(p.expiry) && ((p.qty / (p.maxQty || 20)) * 100 <= 15 || p.qty <= 5));
-        const outItems = products.filter(p => p.qty === 0 && !isItemExpired(p.expiry));
-        const expiringSoon = products.filter(p => isItemNearlyExpired(p.expiry));
-
-        document.getElementById('statTotal').textContent = products.length;
-        document.getElementById('statLow').textContent = lowItems.length;
-        document.getElementById('statOut').textContent = outItems.length;
-
-        let dashTbody = document.querySelector('#dashTable tbody');
-        dashTbody.innerHTML = '';
-        products.slice(-5).reverse().forEach(p => {
-            dashTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td><td>${getStockBadgeHTML(p)}</td><td>${p.dateAdded}</td></tr>`;
-        });
-
-        let dashLowTbody = document.querySelector('#dashLowTable tbody');
-        dashLowTbody.innerHTML = '';
-        if(lowItems.length === 0) dashLowTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No low stock items.</td></tr>`;
-        else lowItems.forEach(p => dashLowTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td></tr>`);
-
-        let dashOutTbody = document.querySelector('#dashOutTable tbody');
-        dashOutTbody.innerHTML = '';
-        if(outItems.length === 0) dashOutTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No out of stock items.</td></tr>`;
-        else outItems.forEach(p => dashOutTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td></tr>`);
-
-        let expTbody = document.querySelector('#dashExpiryTable tbody');
-        expTbody.innerHTML = '';
-        if(expiringSoon.length === 0) expTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No nearly expiring items.</td></tr>`;
-        else expiringSoon.forEach(p => expTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.expiry}</td><td><span class="badge-low">Expiring Soon</span></td></tr>`);
-
-        filterProducts();
-        renderReportsHistory();
-
-        let logSelect = document.getElementById('logProductSelect');
-        logSelect.innerHTML = '';
-        products.forEach(p => {
-            if(p.qty > 0) logSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Stock: ${p.qty}</option>`;
-        });
-
-        let logsTbody = document.querySelector('#logsTable tbody');
-        logsTbody.innerHTML = '';
-        logs.slice(-10).reverse().forEach(l => {
-            logsTbody.innerHTML += `<tr><td>${l.name}</td><td>${l.brand}</td><td>${l.type}</td><td>${l.qty}</td><td>${l.notes}</td><td>${l.date}</td></tr>`;
-        });
-    }
-
-    function loadAdminInfo() {
-        if(currentUser) {
-            document.getElementById('adminName').value = currentUser.fullname;
-            document.getElementById('adminUser').value = currentUser.username;
-            document.getElementById('adminRoleDisplay').value = currentUser.role.toUpperCase();
-        }
+    function showAlert(elementId, msg, isSuccess) {
+        const el = document.getElementById(elementId);
+        el.className = `alert ${isSuccess ? 'success' : 'error'}`;
+        el.textContent = msg;
+        setTimeout(() => el.textContent = '', 4000);
     }
 </script>
 
