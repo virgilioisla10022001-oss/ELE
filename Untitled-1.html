@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dela Cruz Store Inventory Management System</title>
+    <style>
+        :root {
+            --bg-color: linear-gradient(rgba(0, 30, 70, 0.9), rgba(0, 30, 70, 0.9));
+            --primary-color: #004080;
+            --primary-hover: #002b5c;
+            --text-color: white;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #001e46;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(0, 20, 50, 0.85);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+            margin: 20px;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: white;
+        }
+
+        hr {
+            border: 0;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: #d0e8ff;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+            border-color: #ffffff;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Tabs Style */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 10px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .tab-btn.active {
+            background: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Tables & Cards */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        th, td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(0, 64, 128, 0.6);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .alert-msg {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .success { background: rgba(0, 128, 0, 0.3); color: #d4edda; }
+        .error { background: rgba(128, 0, 0, 0.3); color: #f8d7da; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div style="text-align: center;">
+        <h1 style="font-size: 20px; margin: 0;">🛒 DELA CRUZ STORE INVENTORY MANAGEMENT SYSTEM</h1>
+    </div>
+    <hr>
+
+    <!-- AUTH SECTION (LOGIN / REGISTER / FORGOT) -->
+    <div id="authSection">
+        <!-- LOGIN FORM -->
+        <div id="loginView">
+            <h2 style="font-size: 18px;">USER LOGIN</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUser" placeholder="I-type ang username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPass" placeholder="I-type ang password">
+            </div>
+            <button onclick="handleLogin()">LOGIN</button>
+            <div class="btn-row" style="margin-top: 15px;">
+                <button onclick="switchAuthView('registerView')" style="background: #002b5c;">Create Account</button>
+                <button onclick="switchAuthView('forgotView')" style="background: #002b5c;">Forgot Password</button>
+            </div>
+            <div id="loginAlert"></div>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="registerView" class="hidden">
+            <h2 style="font-size: 18px;">CREATE ACCOUNT</h2>
+            <div class="form-group"><label>Full Name</label><input type="text" id="regFullname" placeholder="e.g., Juan Dela Cruz"></div>
+            <div class="form-group"><label>Username</label><input type="text" id="regUser" placeholder="e.g., juandelacruz25"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="regPass" placeholder="I-type ang password"></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="regEmail" placeholder="juandelacruz@gmail.com"></div>
+            <div class="form-group"><label>Birthday</label><input type="date" id="regBday"></div>
+            <div class="form-group"><label>Contact Number</label><input type="text" id="regContact" placeholder="09123456789"></div>
+            <button onclick="handleRegister()">Create Account</button>
+            <button onclick="switchAuthView('loginView')" style="background: #555; margin-top: 10px;">Back to Login</button>
+            <div id="regAlert"></div>
+        </div>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <div id="forgotView" class="hidden">
+            <h2 style="font-size: 18px;">FORGOT PASSWORD</h2>
+            <div class="form-group"><label>Username</label><input type="text" id="forgotUser"></div>
+            <div class="form-group"><label>Email Address</label><input type="email" id="forgotEmail"></div>
+            <div class="form-group"><label>New Password</label><input type="password" id="forgotNewPass"></div>
+            <button onclick="handleResetPassword()">Reset Password</button>
+            <button onclick="switchAuthView('loginView')" style="background: #555; margin-top: 10px;">Back to Login</button>
+            <div id="forgotAlert"></div>
+        </div>
+    </div>
+
+    <!-- MAIN APP DASHBOARD (HIDDEN UNTIL LOGGED IN) -->
+    <div id="appSection" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 id="welcomeUser" style="margin: 0; font-size: 16px;">Welcome</h3>
+            <p id="dateTime" style="margin: 0; font-size: 12px; color: #d0e8ff;"></p>
+        </div>
+        <hr>
+
+        <!-- TABS NAVIGATION -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('inventory')">📦 Inventory</button>
+            <button class="tab-btn" onclick="switchTab('logs')">📝 Log Retails</button>
+            <button class="tab-btn" onclick="switchTab('reports')">📈 Reports</button>
+            <button class="tab-btn" onclick="switchTab('admin')">⚙️ Admin</button>
+            <button class="tab-btn" onclick="switchTab('about')">ℹ️ About</button>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content">
+            <div class="metrics-grid">
+                <div class="metric-card"><strong>All Products</strong><br><span id="statTotal" style="font-size: 20px;">0</span></div>
+                <div class="metric-card" style="border-color: orange;"><strong>Low Stock</strong><br><span id="statLow" style="font-size: 20px;">0</span></div>
+                <div class="metric-card" style="border-color: red;"><strong>Out of Stock</strong><br><span id="statOut" style="font-size: 20px;">0</span></div>
+            </div>
+            <h4>Latest Products Added</h4>
+            <table id="dashTable">
+                <thead><tr><th>Name</th><th>Brand</th><th>Qty</th><th>Date Added</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- TAB 2: INVENTORY -->
+        <div id="tab-inventory" class="tab-content hidden">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h4>➕ Add New Product</h4>
+                    <div class="form-group"><label>Product Name</label><input type="text" id="pName" placeholder="Bear Brand 33g"></div>
+                    <div class="form-group"><label>Brand Name</label><input type="text" id="pBrand" placeholder="Nestlé"></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="pQty" value="0" min="0"></div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="pCat">
+                            <option>Beverages & Dairy</option>
+                            <option>Canned & Processed Goods</option>
+                            <option>Snacks, Chips, & Biscuits</option>
+                            <option>Instant & Ready-to-Eat</option>
+                            <option>Cigarettes</option>
+                            <option>Rice, Grains, & Cooking Ingredients</option>
+                            <option>Coffee</option>
+                            <option>Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Price (₱)</label><input type="number" id="pPrice" step="0.01" value="0.00"></div>
+                    <div class="form-group"><label>Expiry Date</label><input type="date" id="pExpiry"></div>
+                    <button onclick="addProduct()">Add Product</button>
+                </div>
+                <div>
+                    <h4>Product Records List</h4>
+                    <table id="invTable">
+                        <thead><tr><th>Name</th><th>Brand</th><th>Qty</th><th>Price</th><th>Action</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LOG RETAILS -->
+        <div id="tab-logs" class="tab-content hidden">
+            <h4>Record Item Sale</h4>
+            <div class="form-group">
+                <label>Pumili ng Produkto</label>
+                <select id="logProductSelect"></select>
+            </div>
+            <div class="form-group">
+                <label>Quantity Sold</label>
+                <input type="number" id="logQty" value="1" min="1">
+            </div>
+            <button onclick="recordSale()">Save Sale Log</button>
+            <h4 style="margin-top: 20px;">Retail Sales Logs</h4>
+            <table id="logsTable">
+                <thead><tr><th>Product</th><th>Brand</th><th>Qty Sold</th><th>Date/Time</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <!-- TAB 4: REPORTS -->
+        <div id="tab-reports" class="tab-content hidden">
+            <h4>Inventory Reports</h4>
+            <button onclick="alert('Weekly Report Generated Successfully!')">Generate Weekly Report</button>
+            <table style="margin-top: 15px;">
+                <thead><tr><th>Date</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr><td>2025-05-06</td><td>Generated Successfully</td></tr>
+                    <tr><td>2025-04-30</td><td>Generated Successfully</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TAB 5: ADMIN SETTINGS -->
+        <div id="tab-admin" class="tab-content hidden">
+            <h4>Admin Account Information</h4>
+            <div class="form-group"><label>Full Name</label><input type="text" id="adminName" disabled></div>
+            <div class="form-group"><label>Username</label><input type="text" id="adminUser" disabled></div>
+            <div class="form-group"><label>Email</label><input type="text" id="adminEmail" disabled></div>
+        </div>
+
+        <!-- TAB 6: ABOUT -->
+        <div id="tab-about" class="tab-content hidden">
+            <h4>About the System</h4>
+            <p><strong>Dela Cruz Store Inventory Management System</strong></p>
+            <p>Designed to support family-owned retail establishments in managing product inventory, tracking retail logs, monitoring stock levels, and generating reports.</p>
+        </div>
+
+        <button onclick="handleLogout()" style="background: #a94442; margin-top: 30px;">EXIT / LOGOUT SYSTEM</button>
+    </div>
+</div>
+
+<script>
+    // LocalStorage Initialization
+    if (!localStorage.getItem('users')) localStorage.setItem('users', JSON.stringify([]));
+    if (!localStorage.getItem('products')) localStorage.setItem('products', JSON.stringify([]));
+    if (!localStorage.getItem('logs')) localStorage.setItem('logs', JSON.stringify([]));
+
+    let currentUser = null;
+
+    // Clock
+    setInterval(() => {
+        const now = new Date();
+        const timeStr = now.toISOString().slice(0, 19).replace('T', ' ');
+        const dtEl = document.getElementById('dateTime');
+        if(dtEl) dtEl.textContent = timeStr;
+    }, 1000);
+
+    function switchAuthView(viewId) {
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('registerView').classList.add('hidden');
+        document.getElementById('forgotView').classList.add('hidden');
+        document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function showAlert(elementId, msg, isSuccess) {
+        const el = document.getElementById(elementId);
+        el.className = `alert-msg ${isSuccess ? 'success' : 'error'}`;
+        el.textContent = msg;
+        setTimeout(() => el.textContent = '', 4000);
+    }
+
+    function handleRegister() {
+        const fullname = document.getElementById('regFullname').value;
+        const username = document.getElementById('regUser').value;
+        const password = document.getElementById('regPass').value;
+        const email = document.getElementById('regEmail').value;
+        const birthday = document.getElementById('regBday').value;
+        const contact = document.getElementById('regContact').value;
+
+        if(!fullname || !username || !password || !email) {
+            showAlert('regAlert', 'Mangyaring punan ang mga kinakailangang field.', false);
+            return;
+        }
+
+        let users = JSON.parse(localStorage.getItem('users'));
+        if(users.some(u => u.username === username)) {
+            showAlert('regAlert', 'Ang Username na ito ay nagagamit na.', false);
+            return;
+        }
+
+        users.push({fullname, username, password, email, birthday, contact});
+        localStorage.setItem('users', JSON.stringify(users));
+        showAlert('regAlert', 'Account created successfully! Please login.', true);
+        setTimeout(() => switchAuthView('loginView'), 1500);
+    }
+
+    function handleLogin() {
+        const username = document.getElementById('loginUser').value;
+        const password = document.getElementById('loginPass').value;
+        let users = JSON.parse(localStorage.getItem('users'));
+
+        const user = users.find(u => u.username === username && u.password === password);
+        if(user) {
+            currentUser = user;
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+            document.getElementById('welcomeUser').textContent = `Welcome, ${user.fullname}`;
+            loadAdminInfo();
+            refreshAppData();
+        } else {
+            showAlert('loginAlert', 'Invalid username or password!', false);
+        }
+    }
+
+    function handleResetPassword() {
+        const username = document.getElementById('forgotUser').value;
+        const email = document.getElementById('forgotEmail').value;
+        const newPass = document.getElementById('forgotNewPass').value;
+
+        let users = JSON.parse(localStorage.getItem('users'));
+        let user = users.find(u => u.username === username && u.email === email);
+        if(user) {
+            user.password = newPass;
+            localStorage.setItem('users', JSON.stringify(users));
+            showAlert('forgotAlert', 'Password reset successfully!', true);
+            setTimeout(() => switchAuthView('loginView'), 1500);
+        } else {
+            showAlert('forgotAlert', 'Username and Email do not match records.', false);
+        }
+    }
+
+    function handleLogout() {
+        currentUser = null;
+        document.getElementById('appSection').classList.add('hidden');
+        document.getElementById('authSection').classList.remove('hidden');
+        switchAuthView('loginView');
+    }
+
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+        event.target.classList.add('active');
+    }
+
+    function addProduct() {
+        const name = document.getElementById('pName').value;
+        const brand = document.getElementById('pBrand').value;
+        const qty = parseInt(document.getElementById('pQty').value) || 0;
+        const cat = document.getElementById('pCat').value;
+        const price = parseFloat(document.getElementById('pPrice').value) || 0;
+        const expiry = document.getElementById('pExpiry').value;
+        const dateAdded = new Date().toISOString().slice(0, 10);
+
+        if(!name) {
+            alert('Ilagay ang pangalan ng produkto.');
+            return;
+        }
+
+        let products = JSON.parse(localStorage.getItem('products'));
+        products.push({id: Date.now(), name, brand, qty, cat, price, expiry, dateAdded});
+        localStorage.setItem('products', JSON.stringify(products));
+        
+        document.getElementById('pName').value = '';
+        document.getElementById('pBrand').value = '';
+        refreshAppData();
+        alert('Product added successfully!');
+    }
+
+    function deleteProduct(id) {
+        let products = JSON.parse(localStorage.getItem('products'));
+        products = products.filter(p => p.id !== id);
+        localStorage.setItem('products', JSON.stringify(products));
+        refreshAppData();
+    }
+
+    function recordSale() {
+        const prodId = document.getElementById('logProductSelect').value;
+        const qtySold = parseInt(document.getElementById('logQty').value) || 1;
+
+        let products = JSON.parse(localStorage.getItem('products'));
+        let prod = products.find(p => p.id == prodId);
+
+        if(!prod || prod.qty < qtySold) {
+            alert('Error: Insufficient stock available.');
+            return;
+        }
+
+        prod.qty -= qtySold;
+        localStorage.setItem('products', JSON.stringify(products));
+
+        let logs = JSON.parse(localStorage.getItem('logs'));
+        logs.push({name: prod.name, brand: prod.brand, qtySold, date: new Date().toLocaleString()});
+        localStorage.setItem('logs', JSON.stringify(logs));
+
+        refreshAppData();
+        alert('Sale recorded successfully!');
+    }
+
+    function refreshAppData() {
+        let products = JSON.parse(localStorage.getItem('products'));
+        let logs = JSON.parse(localStorage.getItem('logs'));
+
+        // Dashboard Stats
+        document.getElementById('statTotal').textContent = products.length;
+        document.getElementById('statLow').textContent = products.filter(p => p.qty > 0 && p.qty <= 5).length;
+        document.getElementById('statOut').textContent = products.filter(p => p.qty === 0).length;
+
+        // Dashboard Table Latest
+        let dashTbody = document.querySelector('#dashTable tbody');
+        dashTbody.innerHTML = '';
+        products.slice(-5).reverse().forEach(p => {
+            dashTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td><td>${p.dateAdded}</td></tr>`;
+        });
+
+        // Inventory Table
+        let invTbody = document.querySelector('#invTable tbody');
+        invTbody.innerHTML = '';
+        let logSelect = document.getElementById('logProductSelect');
+        logSelect.innerHTML = '';
+        products.forEach(p => {
+            invTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td><td>₱${p.price.toFixed(2)}</td><td><button onclick="deleteProduct(${p.id})" style="background:#a94442; padding:3px 6px; font-size:12px;">Delete</button></td></tr>`;
+            if(p.qty > 0) {
+                logSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Stock: ${p.qty}</option>`;
+            }
+        });
+
+        // Logs Table
+        let logsTbody = document.querySelector('#logsTable tbody');
+        logsTbody.innerHTML = '';
+        logs.slice(-10).reverse().forEach(l => {
+            logsTbody.innerHTML += `<tr><td>${l.name}</td><td>${l.brand}</td><td>${l.qtySold}</td><td>${l.date}</td></tr>`;
+        });
+    }
+
+    function loadAdminInfo() {
+        if(currentUser) {
+            document.getElementById('adminName').value = currentUser.fullname;
+            document.getElementById('adminUser').value = currentUser.username;
+            document.getElementById('adminEmail').value = currentUser.email;
+        }
+    }
+</script>
+
+</body>
+</html>
