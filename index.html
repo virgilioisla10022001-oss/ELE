@@ -626,7 +626,7 @@
                 </div>
 
                 <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Manage User & Staff Accounts</h4>
-                <p style="font-size: 13px;">There is strictly only one Owner[cite: 7]. Admins can view Full Name, Username, and Email of the Owner[cite: 7], but cannot edit or change the Owner's details[cite: 7]. Admins can fully view and edit Associate details (Full Name, Username, Email, Password)[cite: 7].</p>
+                <p style="font-size: 13px;">There is strictly only one Owner. Admins can view Full Name, Username, and Email of the Owner, but cannot edit or change the Owner's details. Admins can fully view and edit Associate details (Full Name, Username, Email, Password).</p>
                 <div class="scrollable-table-box">
                     <table id="usersTable">
                         <thead><tr><th>Full Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
@@ -691,6 +691,28 @@
         </div>
     </div>
 </div>
+
+<!-- FIREBASE SDK CONFIGURATION INTEGRATION -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA6AxuCzAs1TePvX43-cBBfe_H6_35d53A",
+      authDomain: "delacruztore.firebaseapp.com",
+      databaseURL: "https://delacruztore-default-rtdb.firebaseio.com",
+      projectId: "delacruztore",
+      storageBucket: "delacruztore.firebasestorage.app",
+      messagingSenderId: "105395830230",
+      appId: "1:105395830230:web:ad0f5e4be903676c91f877",
+      measurementId: "G-LCGJ04G9L1"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    console.log("Firebase initialized successfully:", app.name);
+</script>
 
 <script>
     if (!localStorage.getItem('users')) {
