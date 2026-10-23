@@ -9,10 +9,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-    <!-- FIREBASE COMPATIBILITY SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <style>
         :root {
             --bg-color: linear-gradient(rgba(0, 30, 70, 0.9), rgba(0, 30, 70, 0.9));
@@ -504,6 +500,7 @@
                 </div>
             </div>
 
+            <!-- INVENTORY SUMMARY BAR GRAPH -->
             <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; margin-bottom: 20px;">
                 <h4 style="font-size: 16px; text-align: left; color: white;">Inventory Summary Chart</h4>
                 <div id="inventoryBarGraph" style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;"></div>
@@ -629,7 +626,7 @@
                 </div>
 
                 <h4 style="font-size: 18px; color: white; text-align: left; margin-top: 20px;">Manage User & Staff Accounts</h4>
-                <p style="font-size: 13px;">There is strictly only one Owner. Admins can view Full Name, Username, and Email of the Owner, but cannot edit or change the Owner's details. Admins can fully view and edit Associate details.</p>
+                <p style="font-size: 13px;">There is strictly only one Owner[cite: 7]. Admins can view Full Name, Username, and Email of the Owner[cite: 7], but cannot edit or change the Owner's details[cite: 7]. Admins can fully view and edit Associate details (Full Name, Username, Email, Password)[cite: 7].</p>
                 <div class="scrollable-table-box">
                     <table id="usersTable">
                         <thead><tr><th>Full Name</th><th>Username</th><th>Role</th><th>Status</th><th>Actions</th></tr></thead>
@@ -696,43 +693,32 @@
 </div>
 
 <script>
-    // FIREBASE INITIALIZATION
-    const firebaseConfig = {
-        apiKey: "AIzaSyA6AxuCzAs1TePvX43-cBBfe_H6_35d53A",
-        authDomain: "delacruztore.firebaseapp.com",
-        databaseURL: "https://delacruztore-default-rtdb.firebaseio.com",
-        projectId: "delacruztore",
-        storageBucket: "delacruztore.firebasestorage.app",
-        messagingSenderId: "105395830230",
-        appId: "1:105395830230:web:ad0f5e4be903676c91f877",
-        measurementId: "G-LCGJ04G9L1"
-    };
+    if (!localStorage.getItem('users')) {
+        const defaultAccounts = [
+            { fullname: "Nomer Bueno", username: "Engr.NBueno", password: "ownerpassword", adminPasscode: "0987654321", email: "EngineernBueno@gmail.com", status: "approved", role: "owner" },
+            { fullname: "virgilio isla", username: "ilyong123", password: "adminpassword", adminPasscode: "123456789", email: "ilyong.isla.7@gmail.com", status: "approved", role: "admin" },
+            { fullname: "John Mico Inocencio", username: "JMInocencio", password: "associatepassword", adminPasscode: "123456789", email: "johnmico@gmail.com", status: "approved", role: "associate" }
+        ];
+        localStorage.setItem('users', JSON.stringify(defaultAccounts));
+    }
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    if (!localStorage.getItem('products')) {
+        const defaultProducts = [
+            { id: 101, name: "Bear Brand Powdered Milk 33g", brand: "Nestlé", qty: 15, maxQty: 100, cat: "Beverages & Dairy", price: 18.00, expiry: "2027-05-10", dateAdded: "2026-10-20" },
+            { id: 102, name: "San Mig Super Coffee 3in1", brand: "San Miguel", qty: 4, maxQty: 50, cat: "Coffee", price: 8.50, expiry: "2026-10-26", dateAdded: "2026-10-21" },
+            { id: 103, name: "Century Tuna Flakes in Oil 180g", brand: "Century Pacific", qty: 0, maxQty: 40, cat: "Canned & Processed Goods", price: 42.00, expiry: "2027-08-30", dateAdded: "2026-10-18" }
+        ];
+        localStorage.setItem('products', JSON.stringify(defaultProducts));
+    }
 
-    // Default Seed Data to Cloud DB
-    db.ref('users').once('value', (snapshot) => {
-        if (!snapshot.exists()) {
-            const defaultAccounts = {
-                "Engr_NBueno": { fullname: "Nomer Bueno", username: "Engr.NBueno", password: "ownerpassword", adminPasscode: "0987654321", email: "EngineernBueno@gmail.com", status: "approved", role: "owner" },
-                "ilyong123": { fullname: "virgilio isla", username: "ilyong123", password: "adminpassword", adminPasscode: "123456789", email: "ilyong.isla.7@gmail.com", status: "approved", role: "admin" },
-                "JMInocencio": { fullname: "John Mico Inocencio", username: "JMInocencio", password: "associatepassword", adminPasscode: "123456789", email: "johnmico@gmail.com", status: "approved", role: "associate" }
-            };
-            db.ref('users').set(defaultAccounts);
-        }
-    });
-
-    db.ref('products').once('value', (snapshot) => {
-        if (!snapshot.exists()) {
-            const defaultProducts = {
-                "p101": { id: 101, name: "Bear Brand Powdered Milk 33g", brand: "Nestlé", qty: 15, maxQty: 100, cat: "Beverages & Dairy", price: 18.00, expiry: "2027-05-10", dateAdded: "2026-10-20" },
-                "p102": { id: 102, name: "San Mig Super Coffee 3in1", brand: "San Miguel", qty: 4, maxQty: 50, cat: "Coffee", price: 8.50, expiry: "2026-10-26", dateAdded: "2026-10-21" },
-                "p103": { id: 103, name: "Century Tuna Flakes in Oil 180g", brand: "Century Pacific", qty: 0, maxQty: 40, cat: "Canned & Processed Goods", price: 42.00, expiry: "2027-08-30", dateAdded: "2026-10-18" }
-            };
-            db.ref('products').set(defaultProducts);
-        }
-    });
+    if (!localStorage.getItem('restockRequests')) localStorage.setItem('restockRequests', JSON.stringify([]));
+    if (!localStorage.getItem('retailRequests')) localStorage.setItem('retailRequests', JSON.stringify([]));
+    if (!localStorage.getItem('approvedRestockHistory')) localStorage.setItem('approvedRestockHistory', JSON.stringify([]));
+    if (!localStorage.getItem('rejectedRestockHistory')) localStorage.setItem('rejectedRestockHistory', JSON.stringify([]));
+    if (!localStorage.getItem('approvedLogs')) localStorage.setItem('approvedLogs', JSON.stringify([]));
+    if (!localStorage.getItem('logs')) localStorage.setItem('logs', JSON.stringify([]));
+    if (!localStorage.getItem('reportsHistory')) localStorage.setItem('reportsHistory', JSON.stringify([]));
+    if (!localStorage.getItem('inventoryLossHistory')) localStorage.setItem('inventoryLossHistory', JSON.stringify([]));
 
     let currentUser = null;
     let isAdminUnlocked = false;
@@ -789,65 +775,50 @@
         setTimeout(() => el.textContent = '', 4000);
     }
 
-    // REAL-TIME CLOUD REGISTRATION
     function handleRegister() {
         const fullname = document.getElementById('regFullname').value;
-        const username = document.getElementById('regUser').value.trim();
+        const username = document.getElementById('regUser').value;
         const password = document.getElementById('regPass').value;
         const email = document.getElementById('regEmail').value;
-        const key = username.replace(/[.#$/[\]]/g, "_");
-
         if(!fullname || !username || !password || !email) {
             showAlert('regAlert', 'Please fill in all required fields.', false);
             return;
         }
-
-        db.ref('users/' + key).once('value', (snapshot) => {
-            if(snapshot.exists()) {
-                showAlert('regAlert', 'Username already taken.', false);
-            } else {
-                db.ref('users/' + key).set({
-                    fullname, username, password, adminPasscode: '123456789', email, status: 'pending', role: 'associate'
-                }).then(() => {
-                    showAlert('regAlert', 'Account registered! Submitted for approval.', true);
-                    setTimeout(() => switchAuthView('loginView'), 2000);
-                });
-            }
-        });
+        let users = JSON.parse(localStorage.getItem('users'));
+        if(users.some(u => u.username === username)) {
+            showAlert('regAlert', 'Username already taken.', false);
+            return;
+        }
+        users.push({ fullname, username, password, adminPasscode: '123456789', email, status: 'pending', role: 'associate' });
+        localStorage.setItem('users', JSON.stringify(users));
+        showAlert('regAlert', 'Account registered! Submitted for approval.', true);
+        setTimeout(() => switchAuthView('loginView'), 2000);
     }
 
-    // REAL-TIME CLOUD LOGIN
     function handleLogin() {
-        const username = document.getElementById('loginUser').value.trim();
+        const username = document.getElementById('loginUser').value;
         const password = document.getElementById('loginPass').value;
-        const key = username.replace(/[.#$/[\]]/g, "_");
-
-        db.ref('users/' + key).once('value', (snapshot) => {
-            if(!snapshot.exists()) {
-                showAlert('loginAlert', 'Invalid username or password!', false);
-                return;
-            }
-            const user = snapshot.val();
-            if(user.password !== password) {
-                showAlert('loginAlert', 'Invalid username or password!', false);
-                return;
-            }
-            if(user.status === 'pending') {
-                showAlert('loginAlert', 'Account awaiting approval.', false);
-                return;
-            }
-            if(user.status === 'rejected') {
-                showAlert('loginAlert', 'Account application rejected.', false);
-                return;
-            }
-            currentUser = user;
-            isAdminUnlocked = false;
-            document.getElementById('authSection').classList.add('hidden');
-            document.getElementById('appSection').classList.remove('hidden');
-            document.getElementById('welcomeUser').textContent = `Welcome, ${user.fullname} (${user.role.toUpperCase()})`;
-            applyRolePermissions();
-            listenToCloudUpdates();
-        });
+        let users = JSON.parse(localStorage.getItem('users'));
+        const user = users.find(u => u.username === username && u.password === password);
+        if(!user) {
+            showAlert('loginAlert', 'Invalid username or password!', false);
+            return;
+        }
+        if(user.status === 'pending') {
+            showAlert('loginAlert', 'Account awaiting approval.', false);
+            return;
+        }
+        if(user.status === 'rejected') {
+            showAlert('loginAlert', 'Account application rejected.', false);
+            return;
+        }
+        currentUser = user;
+        isAdminUnlocked = false;
+        document.getElementById('authSection').classList.add('hidden');
+        document.getElementById('appSection').classList.remove('hidden');
+        document.getElementById('welcomeUser').textContent = `Welcome, ${user.fullname} (${user.role.toUpperCase()})`;
+        applyRolePermissions();
+        refreshAppData();
     }
 
     function applyRolePermissions() {
@@ -895,52 +866,41 @@
     }
 
     function loadExistingProductsDropdown() {
-        db.ref('products').once('value', (snapshot) => {
-            let select = document.getElementById('existingProductSelect');
-            select.innerHTML = '';
-            if(snapshot.exists()) {
-                snapshot.forEach(child => {
-                    let p = child.val();
-                    select.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Qty: ${p.qty}</option>`;
-                });
-                populateExistingProduct();
-            }
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let select = document.getElementById('existingProductSelect');
+        select.innerHTML = '';
+        products.forEach(p => {
+            select.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Qty: ${p.qty}</option>`;
         });
+        if(products.length > 0) populateExistingProduct();
     }
 
     function populateExistingProduct() {
         const id = document.getElementById('existingProductSelect').value;
-        db.ref('products').once('value', (snapshot) => {
-            if(snapshot.exists()) {
-                snapshot.forEach(child => {
-                    let p = child.val();
-                    if (p.id == id) {
-                        document.getElementById('pName').value = p.name;
-                        document.getElementById('pBrand').value = p.brand;
-                        document.getElementById('pCat').value = p.cat;
-                        document.getElementById('pPrice').value = p.price;
-                    }
-                });
-            }
-        });
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let p = products.find(prod => prod.id == id);
+        if (p) {
+            document.getElementById('pName').value = p.name;
+            document.getElementById('pBrand').value = p.brand;
+            document.getElementById('pCat').value = p.cat;
+            document.getElementById('pPrice').value = p.price;
+        }
     }
 
     function handleResetPassword() {
-        const username = document.getElementById('forgotUser').value.trim();
+        const username = document.getElementById('forgotUser').value;
         const email = document.getElementById('forgotEmail').value;
         const newPass = document.getElementById('forgotNewPass').value;
-        const key = username.replace(/[.#$/[\]]/g, "_");
-
-        db.ref('users/' + key).once('value', (snapshot) => {
-            if(snapshot.exists() && snapshot.val().email === email) {
-                db.ref('users/' + key).update({ password: newPass }).then(() => {
-                    showAlert('forgotAlert', 'Password reset successfully!', true);
-                    setTimeout(() => switchAuthView('loginView'), 1500);
-                });
-            } else {
-                showAlert('forgotAlert', 'Username and Email do not match.', false);
-            }
-        });
+        let users = JSON.parse(localStorage.getItem('users'));
+        let user = users.find(u => u.username === username && u.email === email);
+        if(user) {
+            user.password = newPass;
+            localStorage.setItem('users', JSON.stringify(users));
+            showAlert('forgotAlert', 'Password reset successfully!', true);
+            setTimeout(() => switchAuthView('loginView'), 1500);
+        } else {
+            showAlert('forgotAlert', 'Username and Email do not match.', false);
+        }
     }
 
     function handleLogout() {
@@ -987,6 +947,7 @@
             document.getElementById('adminLockView').classList.add('hidden');
             document.getElementById('adminContentView').classList.add('hidden');
             document.getElementById('associateRequestsView').classList.remove('hidden');
+            renderAssociateRequestHistory();
             return;
         }
         document.getElementById('associateRequestsView').classList.add('hidden');
@@ -994,53 +955,48 @@
             document.getElementById('adminLockView').classList.add('hidden');
             document.getElementById('adminContentView').classList.remove('hidden');
             loadAdminInfo();
+            renderPendingApprovals();
+            renderRestockRequests();
+            renderRetailRequests();
+            renderApprovedLogsTable();
+            renderAllUsersTable();
         } else {
             document.getElementById('adminLockView').classList.remove('hidden');
             document.getElementById('adminContentView').classList.add('hidden');
         }
     }
 
-    // REAL-TIME SYNC LISTENERS
-    function listenToCloudUpdates() {
-        db.ref('users').on('value', () => {
-            renderPendingApprovals();
-            renderAllUsersTable();
-        });
-
-        db.ref('products').on('value', () => {
-            refreshAppData();
-        });
-
-        db.ref('restockRequests').on('value', () => {
-            renderRestockRequests();
-            renderAssociateRequestHistory();
-        });
-
-        db.ref('retailRequests').on('value', () => {
-            renderRetailRequests();
-            renderAssociateRequestHistory();
-        });
-    }
-
     function renderAssociateRequestHistory() {
         if (!currentUser) return;
         const name = currentUser.fullname;
 
-        db.ref('restockRequests').once('value', (snap) => {
-            let pendTbody = document.querySelector('#assocPendingTable tbody');
-            pendTbody.innerHTML = '';
-            let count = 0;
-            if(snap.exists()) {
-                snap.forEach(child => {
-                    let r = child.val();
-                    if(r.associateName === name) {
-                        count++;
-                        pendTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>₱${parseFloat(r.price).toFixed(2)}</td><td>${r.dateAdded}</td></tr>`;
-                    }
-                });
-            }
-            if(count === 0) pendTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending restock requests.</td></tr>`;
-        });
+        let allReq = JSON.parse(localStorage.getItem('restockRequests')) || [];
+        let myPending = allReq.filter(r => r.associateName === name);
+        let pendTbody = document.querySelector('#assocPendingTable tbody');
+        pendTbody.innerHTML = '';
+        if(myPending.length === 0) pendTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No pending restock requests.</td></tr>`;
+        else myPending.forEach(r => pendTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>₱${r.price.toFixed(2)}</td><td>${r.dateAdded}</td></tr>`);
+
+        let allRetailReq = JSON.parse(localStorage.getItem('retailRequests')) || [];
+        let myRetailPending = allRetailReq.filter(r => r.associateName === name);
+        let pendRetailTbody = document.querySelector('#assocPendingRetailTable tbody');
+        pendRetailTbody.innerHTML = '';
+        if(myRetailPending.length === 0) pendRetailTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending retail/loss log requests.</td></tr>`;
+        else myRetailPending.forEach(r => pendRetailTbody.innerHTML += `<tr><td>${r.prodName}</td><td>${r.prodBrand}</td><td>${r.logType}</td><td>${r.qty}</td><td>${r.notes || '-'}</td><td>${r.date}</td></tr>`);
+
+        let allApp = JSON.parse(localStorage.getItem('approvedRestockHistory')) || [];
+        let myApp = allApp.filter(r => r.associateName === name);
+        let appTbody = document.querySelector('#assocApprovedTable tbody');
+        appTbody.innerHTML = '';
+        if(myApp.length === 0) appTbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No approved requests.</td></tr>`;
+        else myApp.forEach(r => appTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>${r.approvedBy}</td><td>${r.notes || '-'}</td><td>${r.date}</td></tr>`);
+
+        let allRej = JSON.parse(localStorage.getItem('rejectedRestockHistory')) || [];
+        let myRej = allRej.filter(r => r.associateName === name);
+        let rejTbody = document.querySelector('#assocRejectedTable tbody');
+        rejTbody.innerHTML = '';
+        if(myRej.length === 0) rejTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No rejected requests.</td></tr>`;
+        else myRej.forEach(r => rejTbody.innerHTML += `<tr><td>${r.name}</td><td>${r.brand}</td><td>${r.qty}</td><td>${r.reason}</td><td>${r.date}</td></tr>`);
     }
 
     function changeAdminPassword() {
@@ -1052,39 +1008,57 @@
             alert('Passcode check failed.');
             return;
         }
-        const key = currentUser.username.replace(/[.#$/[\]]/g, "_");
-        db.ref('users/' + key).update({ adminPasscode: newPass }).then(() => {
+        let users = JSON.parse(localStorage.getItem('users'));
+        let u = users.find(usr => usr.username === currentUser.username);
+        if (u) {
+            u.adminPasscode = newPass;
             currentUser.adminPasscode = newPass;
+            localStorage.setItem('users', JSON.stringify(users));
             alert('Admin Passcode updated!');
-        });
+        }
     }
 
     function generateReport() {
         const periodType = document.getElementById('reportTypeSelect').value;
-        db.ref('products').once('value', (snap) => {
-            let products = [];
-            if(snap.exists()) snap.forEach(c => products.push(c.val()));
-            
-            const now = new Date();
-            document.getElementById('pdfReportTitle').textContent = `${periodType.toUpperCase()} INVENTORY & LOSS REPORT`;
-            document.getElementById('pdfReportMeta').textContent = `Generated: ${now.toLocaleString()} | By: ${currentUser ? currentUser.fullname : 'Admin'}`;
+        const products = JSON.parse(localStorage.getItem('products')) || [];
+        const lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
+        const now = new Date();
 
-            const lowItems = products.filter(p => p.qty > 0 && ((p.qty / (p.maxQty || 20)) * 100 <= 15 || p.qty <= 5));
-            const outItems = products.filter(p => p.qty === 0 || isItemExpired(p.expiry));
+        document.getElementById('pdfReportTitle').textContent = `${periodType.toUpperCase()} INVENTORY & LOSS REPORT`;
+        document.getElementById('pdfReportMeta').textContent = `Generated: ${now.toLocaleString()} | By: ${currentUser ? currentUser.fullname : 'Admin'}`;
 
-            document.getElementById('pdfTotalProd').textContent = products.length;
-            document.getElementById('pdfLowStock').textContent = lowItems.length;
-            document.getElementById('pdfOutStock').textContent = outItems.length;
+        const lowItems = products.filter(p => p.qty > 0 && ((p.qty / (p.maxQty || 20)) * 100 <= 15 || p.qty <= 5));
+        const outItems = products.filter(p => p.qty === 0 || isItemExpired(p.expiry));
 
-            let pdfTbody = document.querySelector('#pdfInventoryDetailsTable tbody');
-            pdfTbody.innerHTML = '';
-            products.forEach(p => {
-                pdfTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.cat}</td><td>${p.qty}</td><td>₱${parseFloat(p.price).toFixed(2)}</td></tr>`;
+        document.getElementById('pdfTotalProd').textContent = products.length;
+        document.getElementById('pdfLowStock').textContent = lowItems.length;
+        document.getElementById('pdfOutStock').textContent = outItems.length;
+
+        let lossTbody = document.querySelector('#pdfLossSummaryTable tbody');
+        lossTbody.innerHTML = '';
+        if(lossHistory.length === 0) {
+            lossTbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No loss items recorded.</td></tr>`;
+        } else {
+            lossHistory.forEach(l => {
+                lossTbody.innerHTML += `<tr><td>${l.name}</td><td>${l.brand}</td><td>${l.type} (${l.notes || '-'})</td><td>${l.qty}</td><td>${l.date}</td></tr>`;
             });
+        }
 
-            document.getElementById('reportPreviewContainer').classList.remove('hidden');
-            renderInventoryBarGraph(products);
+        let pdfTbody = document.querySelector('#pdfInventoryDetailsTable tbody');
+        pdfTbody.innerHTML = '';
+        products.forEach(p => {
+            pdfTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.cat}</td><td>${p.qty}</td><td>₱${p.price.toFixed(2)}</td></tr>`;
         });
+
+        document.getElementById('reportPreviewContainer').classList.remove('hidden');
+
+        // Render Bar Graph
+        renderInventoryBarGraph(products);
+
+        let history = JSON.parse(localStorage.getItem('reportsHistory')) || [];
+        history.push({ date: now.toISOString().slice(0, 10), period: periodType, by: currentUser ? currentUser.fullname : 'Admin' });
+        localStorage.setItem('reportsHistory', JSON.stringify(history));
+        renderReportsHistory();
     }
 
     function renderInventoryBarGraph(products) {
@@ -1112,6 +1086,19 @@
         });
     }
 
+    function renderReportsHistory() {
+        let history = JSON.parse(localStorage.getItem('reportsHistory')) || [];
+        let tbody = document.querySelector('#reportsHistoryTable tbody');
+        tbody.innerHTML = '';
+        if(history.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No reports generated yet.</td></tr>`;
+            return;
+        }
+        history.slice(-10).reverse().forEach(r => {
+            tbody.innerHTML += `<tr><td>${r.date}</td><td>${r.period} Report</td><td>${r.by}</td><td><button class="btn-action btn-edit" onclick="exportReportToPDF()">Download PDF</button></td></tr>`;
+        });
+    }
+
     function exportReportToPDF() {
         const { jsPDF } = window.jspdf;
         const element = document.getElementById('reportPdfPreview');
@@ -1131,133 +1118,248 @@
     }
 
     function renderPendingApprovals() {
-        db.ref('users').once('value', (snap) => {
-            let tbody = document.querySelector('#approvalTable tbody');
-            tbody.innerHTML = '';
-            let count = 0;
-            if(snap.exists()) {
-                snap.forEach(c => {
-                    let u = c.val();
-                    if(u.status === 'pending') {
-                        count++;
-                        tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td>${u.email}</td><td><button class="btn-action btn-approve" onclick="approveUser('${u.username}')">Approve</button> <button class="btn-action btn-reject" onclick="rejectUser('${u.username}')">Reject</button></td></tr>`;
-                    }
-                });
-            }
-            if(count === 0) tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No pending approvals.</td></tr>`;
+        let users = JSON.parse(localStorage.getItem('users'));
+        let pending = users.filter(u => u.status === 'pending');
+        let tbody = document.querySelector('#approvalTable tbody');
+        tbody.innerHTML = '';
+        if (pending.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No pending approvals.</td></tr>`;
+            return;
+        }
+        pending.forEach(u => {
+            tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td>${u.email}</td><td><button class="btn-action btn-approve" onclick="approveUser('${u.username}')">Approve</button> <button class="btn-action btn-reject" onclick="rejectUser('${u.username}')">Reject</button></td></tr>`;
         });
     }
 
     function approveUser(username) {
-        const key = username.replace(/[.#$/[\]]/g, "_");
-        db.ref('users/' + key).update({ status: 'approved' });
+        let users = JSON.parse(localStorage.getItem('users'));
+        let u = users.find(user => user.username === username);
+        if (u) {
+            u.status = 'approved';
+            localStorage.setItem('users', JSON.stringify(users));
+            renderPendingApprovals();
+            renderAllUsersTable();
+        }
     }
 
     function rejectUser(username) {
-        const key = username.replace(/[.#$/[\]]/g, "_");
-        db.ref('users/' + key).update({ status: 'rejected' });
+        let users = JSON.parse(localStorage.getItem('users'));
+        let u = users.find(user => user.username === username);
+        if (u) {
+            u.status = 'rejected';
+            localStorage.setItem('users', JSON.stringify(users));
+            renderPendingApprovals();
+            renderAllUsersTable();
+        }
     }
 
     function renderRestockRequests() {
-        db.ref('restockRequests').once('value', (snap) => {
-            let tbody = document.querySelector('#restockRequestTable tbody');
-            tbody.innerHTML = '';
-            if (!snap.exists()) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending restock requests.</td></tr>`;
-                return;
-            }
-            snap.forEach(child => {
-                let req = child.val();
-                tbody.innerHTML += `<tr><td>${req.associateName}</td><td>${req.name}</td><td>${req.brand}</td><td>${req.qty}</td><td>₱${parseFloat(req.price).toFixed(2)}</td><td><button class="btn-action btn-approve" onclick="approveRestock('${child.key}')">Approve</button></td></tr>`;
-            });
+        let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
+        let tbody = document.querySelector('#restockRequestTable tbody');
+        tbody.innerHTML = '';
+        if (requests.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;">No pending restock requests.</td></tr>`;
+            return;
+        }
+        requests.forEach((req, index) => {
+            tbody.innerHTML += `<tr><td>${req.associateName}</td><td>${req.name}</td><td>${req.brand}</td><td>${req.qty}</td><td>₱${req.price.toFixed(2)}</td><td><button class="btn-action btn-approve" onclick="promptApproveRestock(${index})">Approve</button> <button class="btn-action btn-reject" onclick="promptRejectRestock(${index})">Reject</button></td></tr>`;
         });
     }
 
     function renderRetailRequests() {
-        db.ref('retailRequests').once('value', (snap) => {
-            let tbody = document.querySelector('#retailRequestTable tbody');
-            tbody.innerHTML = '';
-            if (!snap.exists()) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No pending retail / loss log requests.</td></tr>`;
-                return;
-            }
-            snap.forEach(child => {
-                let req = child.val();
-                tbody.innerHTML += `<tr><td>${req.associateName}</td><td>${req.prodName}</td><td>${req.prodBrand}</td><td>${req.logType}</td><td>${req.qty}</td><td>${req.notes || '-'}</td><td><button class="btn-action btn-approve" onclick="approveRetailLogRequest('${child.key}')">Approve</button></td></tr>`;
-            });
+        let requests = JSON.parse(localStorage.getItem('retailRequests')) || [];
+        let tbody = document.querySelector('#retailRequestTable tbody');
+        tbody.innerHTML = '';
+        if (requests.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No pending retail / loss log requests.</td></tr>`;
+            return;
+        }
+        requests.forEach((req, index) => {
+            tbody.innerHTML += `<tr><td>${req.associateName}</td><td>${req.prodName}</td><td>${req.prodBrand}</td><td>${req.logType}</td><td>${req.qty}</td><td>${req.notes || '-'}</td><td><button class="btn-action btn-approve" onclick="approveRetailLogRequest(${index})">Approve</button> <button class="btn-action btn-reject" onclick="rejectRetailLogRequest(${index})">Reject</button></td></tr>`;
         });
     }
 
-    function approveRestock(key) {
-        db.ref('restockRequests/' + key).once('value', (snap) => {
-            if(snap.exists()) {
-                let req = snap.val();
-                const pKey = "p" + Date.now();
-                db.ref('products/' + pKey).set({
-                    id: Date.now(), name: req.name, brand: req.brand, qty: req.qty, maxQty: req.qty * 2, cat: req.cat, price: req.price, expiry: req.expiry, dateAdded: req.dateAdded
-                }).then(() => {
-                    db.ref('restockRequests/' + key).remove();
-                });
-            }
-        });
+    function approveRetailLogRequest(index) {
+        let requests = JSON.parse(localStorage.getItem('retailRequests')) || [];
+        let req = requests[index];
+
+        let products = JSON.parse(localStorage.getItem('products'));
+        let prod = products.find(p => p.id == req.prodId);
+
+        if(!prod || prod.qty < req.qty) {
+            alert('Cannot approve: Insufficient stock in inventory.');
+            return;
+        }
+
+        prod.qty -= req.qty;
+        localStorage.setItem('products', JSON.stringify(products));
+
+        let lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
+        lossHistory.push({ name: req.prodName, brand: req.prodBrand, type: req.logType, qty: req.qty, notes: req.notes, date: new Date().toLocaleString() });
+        localStorage.setItem('inventoryLossHistory', JSON.stringify(lossHistory));
+
+        let logs = JSON.parse(localStorage.getItem('logs')) || [];
+        logs.push({ name: req.prodName, brand: req.prodBrand, type: req.logType, qty: req.qty, notes: req.notes || req.logType, date: new Date().toLocaleString() });
+        localStorage.setItem('logs', JSON.stringify(logs));
+
+        addApprovedLog('Retail/Loss Log', `${req.logType} - ${req.prodName} (${req.qty})`, req.associateName);
+
+        let approvedHistory = JSON.parse(localStorage.getItem('approvedRestockHistory')) || [];
+        approvedHistory.push({ associateName: req.associateName, name: req.prodName, brand: req.prodBrand, qty: req.qty, approvedBy: currentUser.fullname, notes: req.notes, date: new Date().toLocaleString() });
+        localStorage.setItem('approvedRestockHistory', JSON.stringify(approvedHistory));
+
+        requests.splice(index, 1);
+        localStorage.setItem('retailRequests', JSON.stringify(requests));
+
+        renderRetailRequests();
+        renderApprovedLogsTable();
+        refreshAppData();
+        alert('Retail/Loss log request approved!');
     }
 
-    function approveRetailLogRequest(key) {
-        db.ref('retailRequests/' + key).once('value', (snap) => {
-            if(snap.exists()) {
-                let req = snap.val();
-                db.ref('retailRequests/' + key).remove();
-            }
-        });
+    function rejectRetailLogRequest(index) {
+        let reason = prompt("Enter reason for rejection (Required):", "");
+        if (!reason) {
+            alert("Reason is required to reject.");
+            return;
+        }
+
+        let requests = JSON.parse(localStorage.getItem('retailRequests')) || [];
+        let req = requests[index];
+
+        let rejectedHistory = JSON.parse(localStorage.getItem('rejectedRestockHistory')) || [];
+        rejectedHistory.push({ associateName: req.associateName, name: req.prodName, brand: req.prodBrand, qty: req.qty, reason, date: new Date().toLocaleString() });
+        localStorage.setItem('rejectedRestockHistory', JSON.stringify(rejectedHistory));
+
+        requests.splice(index, 1);
+        localStorage.setItem('retailRequests', JSON.stringify(requests));
+
+        renderRetailRequests();
+        alert('Log request rejected.');
+    }
+
+    function promptApproveRestock(index) {
+        let notes = prompt("Enter optional notes for approval:", "");
+        approveRestock(index, notes || '');
+    }
+
+    function promptRejectRestock(index) {
+        let reason = prompt("Enter reason for rejection (Required):", "");
+        if (!reason) {
+            alert("Reason is required to reject a request.");
+            return;
+        }
+        rejectRestock(index, reason);
+    }
+
+    function approveRestock(index, notes) {
+        let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
+        let req = requests[index];
+        let products = JSON.parse(localStorage.getItem('products'));
+        
+        let existing = products.find(p => p.name.toLowerCase() === req.name.toLowerCase());
+        if (existing) {
+            existing.qty += req.qty;
+        } else {
+            products.push({ id: Date.now(), name: req.name, brand: req.brand, qty: req.qty, maxQty: req.qty * 2, cat: req.cat, price: req.price, expiry: req.expiry, dateAdded: req.dateAdded });
+        }
+        localStorage.setItem('products', JSON.stringify(products));
+
+        let approvedHistory = JSON.parse(localStorage.getItem('approvedRestockHistory')) || [];
+        approvedHistory.push({ associateName: req.associateName, name: req.name, brand: req.brand, qty: req.qty, approvedBy: currentUser.fullname, notes, date: new Date().toLocaleString() });
+        localStorage.setItem('approvedRestockHistory', JSON.stringify(approvedHistory));
+
+        addApprovedLog('Restock Request', `Restock - ${req.name} (${req.qty})`, req.associateName);
+
+        requests.splice(index, 1);
+        localStorage.setItem('restockRequests', JSON.stringify(requests));
+        renderRestockRequests();
+        renderApprovedLogsTable();
+        refreshAppData();
+    }
+
+    function rejectRestock(index, reason) {
+        let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
+        let req = requests[index];
+
+        let rejectedHistory = JSON.parse(localStorage.getItem('rejectedRestockHistory')) || [];
+        rejectedHistory.push({ associateName: req.associateName, name: req.name, brand: req.brand, qty: req.qty, reason, date: new Date().toLocaleString() });
+        localStorage.setItem('rejectedRestockHistory', JSON.stringify(rejectedHistory));
+
+        requests.splice(index, 1);
+        localStorage.setItem('restockRequests', JSON.stringify(requests));
+        renderRestockRequests();
+    }
+
+    function addApprovedLog(type, details, requestedBy) {
+        let logs = JSON.parse(localStorage.getItem('approvedLogs')) || [];
+        logs.push({ type, details, requestedBy, approvedBy: currentUser ? currentUser.fullname : 'Admin', date: new Date().toLocaleString() });
+        localStorage.setItem('approvedLogs', JSON.stringify(logs));
+    }
+
+    function renderApprovedLogsTable() {
+        let logs = JSON.parse(localStorage.getItem('approvedLogs')) || [];
+        let tbody = document.querySelector('#approvedLogTable tbody');
+        tbody.innerHTML = '';
+        if(logs.length === 0) tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">No logs yet.</td></tr>`;
+        else logs.slice(-10).reverse().forEach(l => tbody.innerHTML += `<tr><td>${l.type}</td><td>${l.details}</td><td>${l.requestedBy}</td><td>${l.approvedBy}</td><td>${l.date}</td></tr>`);
     }
 
     function renderAllUsersTable() {
-        db.ref('users').once('value', (snap) => {
-            let tbody = document.querySelector('#usersTable tbody');
-            tbody.innerHTML = '';
-            if(snap.exists()) {
-                snap.forEach(c => {
-                    let u = c.val();
-                    let actionBtn = (currentUser && currentUser.role === 'admin' && u.role === 'owner') ? `<span style="color:#aaa;">Restricted</span>` : `<button class="btn-action btn-edit" onclick="openEditModal('${u.username}')">Edit</button>`;
-                    tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td><strong>${u.role.toUpperCase()}</strong></td><td>${u.status}</td><td>${actionBtn}</td></tr>`;
-                });
-            }
+        let users = JSON.parse(localStorage.getItem('users'));
+        let tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = '';
+        users.forEach(u => {
+            let actionBtn = (currentUser.role === 'admin' && u.role === 'owner') ? `<span style="color:#aaa;">Restricted</span>` : `<button class="btn-action btn-edit" onclick="openEditModal('${u.username}')">Edit</button> <button class="btn-action btn-delete" onclick="deleteUserAccount('${u.username}')">Delete</button>`;
+            tbody.innerHTML += `<tr><td>${u.fullname}</td><td>${u.username}</td><td><strong>${u.role.toUpperCase()}</strong></td><td>${u.status}</td><td>${actionBtn}</td></tr>`;
         });
     }
 
     function openEditModal(username) {
-        const key = username.replace(/[.#$/[\]]/g, "_");
-        db.ref('users/' + key).once('value', (snap) => {
-            if(!snap.exists()) return;
-            let target = snap.val();
-            document.getElementById('editOldUsernameKey').value = target.username;
-            document.getElementById('editFullname').value = target.fullname;
-            document.getElementById('editUsername').value = target.username;
-            document.getElementById('editEmail').value = target.email;
-            document.getElementById('editPassword').value = target.password;
-            document.getElementById('editAdminPasscode').value = target.adminPasscode || '';
-            document.getElementById('editRole').value = target.role;
-            document.getElementById('editStatus').value = target.status;
-            document.getElementById('editUserModal').classList.remove('hidden');
-        });
+        let users = JSON.parse(localStorage.getItem('users'));
+        let target = users.find(u => u.username === username);
+        if(!target) return;
+        document.getElementById('editOldUsernameKey').value = target.username;
+        document.getElementById('editFullname').value = target.fullname;
+        document.getElementById('editUsername').value = target.username;
+        document.getElementById('editEmail').value = target.email;
+        document.getElementById('editPassword').value = target.password;
+        document.getElementById('editAdminPasscode').value = target.adminPasscode || '';
+        document.getElementById('editRole').value = target.role;
+        document.getElementById('editStatus').value = target.status;
+        document.getElementById('editUserModal').classList.remove('hidden');
     }
 
     function closeEditModal() { document.getElementById('editUserModal').classList.add('hidden'); }
 
     function saveEditedUser() {
-        let oldKey = document.getElementById('editOldUsernameKey').value.replace(/[.#$/[\]]/g, "_");
-        db.ref('users/' + oldKey).update({
-            fullname: document.getElementById('editFullname').value,
-            email: document.getElementById('editEmail').value,
-            password: document.getElementById('editPassword').value,
-            role: document.getElementById('editRole').value,
-            status: document.getElementById('editStatus').value
-        }).then(() => {
+        let oldKey = document.getElementById('editOldUsernameKey').value;
+        let users = JSON.parse(localStorage.getItem('users'));
+        let target = users.find(u => u.username === oldKey);
+        if (target) {
+            target.fullname = document.getElementById('editFullname').value;
+            target.username = document.getElementById('editUsername').value;
+            target.email = document.getElementById('editEmail').value;
+            target.password = document.getElementById('editPassword').value;
+            localStorage.setItem('users', JSON.stringify(users));
             closeEditModal();
-        });
+            renderAllUsersTable();
+        }
+    }
+
+    function deleteUserAccount(username) {
+        let users = JSON.parse(localStorage.getItem('users'));
+        let target = users.find(u => u.username === username);
+        if (target && target.role === 'owner') { alert('Cannot delete Owner.'); return; }
+        if (confirm('Delete user?')) {
+            users = users.filter(u => u.username !== username);
+            localStorage.setItem('users', JSON.stringify(users));
+            renderAllUsersTable();
+        }
     }
 
     function addProduct() {
+        const actionType = document.getElementById('actionTypeSelect').value;
         const name = document.getElementById('pName').value;
         const brand = document.getElementById('pBrand').value;
         const qty = parseInt(document.getElementById('pQty').value) || 0;
@@ -1269,58 +1371,67 @@
         if(!name) { alert('Enter product name.'); return; }
 
         if (currentUser && currentUser.role === 'associate') {
-            const rKey = "req_" + Date.now();
-            db.ref('restockRequests/' + rKey).set({
-                associateName: currentUser.fullname, name, brand, qty, cat, price, expiry, dateAdded
-            }).then(() => alert('Restock request submitted to Admin.'));
+            let requests = JSON.parse(localStorage.getItem('restockRequests')) || [];
+            requests.push({ associateName: currentUser.fullname, name, brand, qty, cat, price, expiry, dateAdded });
+            localStorage.setItem('restockRequests', JSON.stringify(requests));
+            alert('Restock request submitted to Admin.');
         } else {
-            const pKey = "p_" + Date.now();
-            db.ref('products/' + pKey).set({
-                id: Date.now(), name, brand, qty, maxQty: qty * 2, cat, price, expiry, dateAdded
-            }).then(() => alert('Product inventory updated successfully!'));
+            let products = JSON.parse(localStorage.getItem('products'));
+            if (actionType === 'new') {
+                products.push({ id: Date.now(), name, brand, qty, maxQty: qty * 2, cat, price, expiry, dateAdded });
+            } else {
+                let existingId = document.getElementById('existingProductSelect').value;
+                let found = products.find(p => p.id == existingId);
+                if (found) {
+                    if (actionType === 'add') found.qty += qty;
+                    else if (actionType === 'restock') found.qty = qty;
+                    if (expiry) found.expiry = expiry;
+                }
+            }
+            localStorage.setItem('products', JSON.stringify(products));
+            alert('Product inventory updated successfully!');
         }
+        refreshAppData();
     }
 
     function filterProducts() {
         const query = document.getElementById('searchItem').value.toLowerCase();
         const catFilter = document.getElementById('filterCategorySelect').value;
-        
-        db.ref('products').once('value', (snap) => {
-            let tbody = document.querySelector('#invTable tbody');
-            tbody.innerHTML = '';
-            let products = [];
-            if(snap.exists()) snap.forEach(c => products.push(c.val()));
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let tbody = document.querySelector('#invTable tbody');
+        tbody.innerHTML = '';
 
-            const filtered = products.filter(p => {
-                const matchQuery = p.name.toLowerCase().includes(query) || p.brand.toLowerCase().includes(query);
-                const matchCat = !catFilter || p.cat === catFilter;
-                return matchQuery && matchCat;
-            });
+        const filtered = products.filter(p => {
+            const matchQuery = p.name.toLowerCase().includes(query) || p.brand.toLowerCase().includes(query);
+            const matchCat = !catFilter || p.cat === catFilter;
+            return matchQuery && matchCat;
+        });
 
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No matching products.</td></tr>`;
-                return;
-            }
+        if(filtered.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;">No matching products.</td></tr>`;
+            return;
+        }
 
-            filtered.forEach(p => {
-                const badge = getStockBadgeHTML(p);
-                let actionTd = (currentUser && currentUser.role !== 'associate') ? `<td><button class="btn-action btn-delete" onclick="deleteProduct(${p.id})">Remove</button></td>` : '';
-                tbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.cat}</td><td>${p.qty}</td><td>${p.expiry || '-'}</td><td>${badge}</td>${actionTd}</tr>`;
-            });
+        filtered.forEach(p => {
+            const badge = getStockBadgeHTML(p);
+            let actionTd = (currentUser && currentUser.role !== 'associate') ? `<td><button class="btn-action btn-delete" onclick="deleteProduct(${p.id})">Remove</button></td>` : '';
+            tbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.cat}</td><td>${p.qty}</td><td>${p.expiry || '-'}</td><td>${badge}</td>${actionTd}</tr>`;
         });
     }
 
     function deleteProduct(id) {
         if (currentUser && currentUser.role === 'associate') { alert('Unauthorized.'); return; }
-        db.ref('products').once('value', (snap) => {
-            if(snap.exists()) {
-                snap.forEach(c => {
-                    if(c.val().id == id) {
-                        db.ref('products/' + c.key).remove();
-                    }
-                });
-            }
-        });
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let idx = products.findIndex(p => p.id === id);
+        if (idx !== -1) {
+            let removed = products.splice(idx, 1)[0];
+            localStorage.setItem('products', JSON.stringify(products));
+
+            let lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
+            lossHistory.push({ name: removed.name, brand: removed.brand, type: 'Removed/Deleted', qty: removed.qty, notes: 'Manual Removal by Admin', date: new Date().toLocaleString() });
+            localStorage.setItem('inventoryLossHistory', JSON.stringify(lossHistory));
+            refreshAppData();
+        }
     }
 
     function recordSaleOrLoss() {
@@ -1329,56 +1440,92 @@
         const qty = parseInt(document.getElementById('logQty').value) || 1;
         const notes = document.getElementById('logNotes').value;
 
-        db.ref('products').once('value', (snap) => {
-            if(!snap.exists()) return;
-            snap.forEach(c => {
-                let prod = c.val();
-                if(prod.id == prodId) {
-                    if(prod.qty < qty) {
-                        alert('Insufficient stock.');
-                        return;
-                    }
-                    if (currentUser && currentUser.role === 'associate') {
-                        const rKey = "ret_" + Date.now();
-                        db.ref('retailRequests/' + rKey).set({
-                            associateName: currentUser.fullname, prodId: prod.id, prodName: prod.name, prodBrand: prod.brand, logType, qty, notes: notes || logType, date: new Date().toLocaleString()
-                        }).then(() => alert('Request submitted to Admin/Owner.'));
-                    } else {
-                        db.ref('products/' + c.key).update({ qty: prod.qty - qty }).then(() => {
-                            alert('Retail/Loss logged successfully!');
-                        });
-                    }
-                }
+        let products = JSON.parse(localStorage.getItem('products'));
+        let prod = products.find(p => p.id == prodId);
+
+        if(!prod || prod.qty < qty) {
+            alert('Insufficient stock.');
+            return;
+        }
+
+        if (currentUser && currentUser.role === 'associate') {
+            let retailRequests = JSON.parse(localStorage.getItem('retailRequests')) || [];
+            retailRequests.push({
+                associateName: currentUser.fullname,
+                prodId: prod.id,
+                prodName: prod.name,
+                prodBrand: prod.brand,
+                logType,
+                qty,
+                notes: notes || logType,
+                date: new Date().toLocaleString()
             });
-        });
+            localStorage.setItem('retailRequests', JSON.stringify(retailRequests));
+            alert('Retail/Loss log request submitted to Admin/Owner for approval.');
+        } else {
+            prod.qty -= qty;
+            localStorage.setItem('products', JSON.stringify(products));
+
+            let lossHistory = JSON.parse(localStorage.getItem('inventoryLossHistory')) || [];
+            lossHistory.push({ name: prod.name, brand: prod.brand, type: logType, qty, notes, date: new Date().toLocaleString() });
+            localStorage.setItem('inventoryLossHistory', JSON.stringify(lossHistory));
+
+            let logs = JSON.parse(localStorage.getItem('logs')) || [];
+            logs.push({ name: prod.name, brand: prod.brand, type: logType, qty, notes: notes || logType, date: new Date().toLocaleString() });
+            localStorage.setItem('logs', JSON.stringify(logs));
+
+            alert('Retail/Loss logged successfully!');
+        }
+
+        refreshAppData();
     }
 
     function refreshAppData() {
-        db.ref('products').once('value', (snap) => {
-            let products = [];
-            if(snap.exists()) snap.forEach(c => products.push(c.val()));
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let logs = JSON.parse(localStorage.getItem('logs')) || [];
 
-            const lowItems = products.filter(p => p.qty > 0 && !isItemExpired(p.expiry) && ((p.qty / (p.maxQty || 20)) * 100 <= 15 || p.qty <= 5));
-            const outItems = products.filter(p => p.qty === 0 && !isItemExpired(p.expiry));
-            const expiringSoon = products.filter(p => isItemNearlyExpired(p.expiry));
+        const lowItems = products.filter(p => p.qty > 0 && !isItemExpired(p.expiry) && ((p.qty / (p.maxQty || 20)) * 100 <= 15 || p.qty <= 5));
+        const outItems = products.filter(p => p.qty === 0 && !isItemExpired(p.expiry));
+        const expiringSoon = products.filter(p => isItemNearlyExpired(p.expiry));
 
-            document.getElementById('statTotal').textContent = products.length;
-            document.getElementById('statLow').textContent = lowItems.length;
-            document.getElementById('statOut').textContent = outItems.length;
+        document.getElementById('statTotal').textContent = products.length;
+        document.getElementById('statLow').textContent = lowItems.length;
+        document.getElementById('statOut').textContent = outItems.length;
 
-            let dashTbody = document.querySelector('#dashTable tbody');
-            dashTbody.innerHTML = '';
-            products.slice(-5).reverse().forEach(p => {
-                dashTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td><td>${getStockBadgeHTML(p)}</td><td>${p.dateAdded}</td></tr>`;
-            });
+        let dashTbody = document.querySelector('#dashTable tbody');
+        dashTbody.innerHTML = '';
+        products.slice(-5).reverse().forEach(p => {
+            dashTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td><td>${getStockBadgeHTML(p)}</td><td>${p.dateAdded}</td></tr>`;
+        });
 
-            let logSelect = document.getElementById('logProductSelect');
-            logSelect.innerHTML = '';
-            products.forEach(p => {
-                if(p.qty > 0) logSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Stock: ${p.qty}</option>`;
-            });
+        let dashLowTbody = document.querySelector('#dashLowTable tbody');
+        dashLowTbody.innerHTML = '';
+        if(lowItems.length === 0) dashLowTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No low stock items.</td></tr>`;
+        else lowItems.forEach(p => dashLowTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td></tr>`);
 
-            filterProducts();
+        let dashOutTbody = document.querySelector('#dashOutTable tbody');
+        dashOutTbody.innerHTML = '';
+        if(outItems.length === 0) dashOutTbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">No out of stock items.</td></tr>`;
+        else outItems.forEach(p => dashOutTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.qty}</td></tr>`);
+
+        let expTbody = document.querySelector('#dashExpiryTable tbody');
+        expTbody.innerHTML = '';
+        if(expiringSoon.length === 0) expTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No nearly expiring items.</td></tr>`;
+        else expiringSoon.forEach(p => expTbody.innerHTML += `<tr><td>${p.name}</td><td>${p.brand}</td><td>${p.expiry}</td><td><span class="badge-low">Expiring Soon</span></td></tr>`);
+
+        filterProducts();
+        renderReportsHistory();
+
+        let logSelect = document.getElementById('logProductSelect');
+        logSelect.innerHTML = '';
+        products.forEach(p => {
+            if(p.qty > 0) logSelect.innerHTML += `<option value="${p.id}">${p.name} (${p.brand}) - Stock: ${p.qty}</option>`;
+        });
+
+        let logsTbody = document.querySelector('#logsTable tbody');
+        logsTbody.innerHTML = '';
+        logs.slice(-10).reverse().forEach(l => {
+            logsTbody.innerHTML += `<tr><td>${l.name}</td><td>${l.brand}</td><td>${l.type}</td><td>${l.qty}</td><td>${l.notes}</td><td>${l.date}</td></tr>`;
         });
     }
 
