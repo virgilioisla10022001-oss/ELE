@@ -92,7 +92,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Default Seed Data to Cloud Database if empty
     const dbRef = ref(db);
     get(child(dbRef, 'users')).then((snapshot) => {
         if (!snapshot.exists()) {
@@ -105,10 +104,12 @@
 
     let cloudUsers = [];
     
-    // Realtime listener to sync users automatically across devices
     onValue(ref(db, 'users'), (snapshot) => {
         cloudUsers = snapshot.val() || [];
         renderAdminApprovals();
+        
+        // Check if there's a saved session in localStorage so refreshing won't log out
+        checkActiveSession();
     });
 
     window.switchView = function(viewId) {
@@ -137,8 +138,6 @@
         set(ref(db, 'users'), cloudUsers).then(() => {
             showAlert('regAlert', 'Registered successfully! Wait for admin approval.', true);
             setTimeout(() => switchView('loginView'), 2000);
-        }).catch(err => {
-            showAlert('regAlert', 'Error: ' + err.message, false);
         });
     }
 
@@ -156,6 +155,26 @@
             return;
         }
 
+        // Save session locally so reload won't log out
+        localStorage.setItem('activeUser', JSON.stringify(user));
+        setUIVisible(user);
+    }
+
+    function checkActiveSession() {
+        const savedUser = localStorage.getItem('activeUser');
+        if (savedUser && cloudUsers.length > 0) {
+            const parsedUser = JSON.parse(savedUser);
+            // Verify if user still exists and is approved in cloud
+            const latestUser = cloudUsers.find(u => u.username === parsedUser.username && u.status === 'approved');
+            if (latestUser) {
+                setUIVisible(latestUser);
+            } else {
+                localStorage.removeItem('activeUser');
+            }
+        }
+    }
+
+    function setUIVisible(user) {
         document.getElementById('authSection').classList.add('hidden');
         document.getElementById('appSection').classList.remove('hidden');
         document.getElementById('welcomeMsg').textContent = `Welcome, ${user.fullname} (${user.role.toUpperCase()})`;
@@ -191,6 +210,7 @@
     }
 
     window.handleLogout = function() {
+        localStorage.removeItem('activeUser'); // Clear saved session on explicit logout
         document.getElementById('appSection').classList.add('hidden');
         document.getElementById('authSection').classList.remove('hidden');
         document.getElementById('adminPanel').classList.add('hidden');
