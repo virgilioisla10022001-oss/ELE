@@ -692,8 +692,8 @@
     </div>
 </div>
 
-<!-- NORMAL SCRIPT (Gumagana kahit i-double click lang) -->
-<script>
+<!-- ES MODULE SINGLE SCRIPT -->
+<script type="module">
     if (!localStorage.getItem('users')) {
         const defaultAccounts = [
             { fullname: "Nomer Bueno", username: "Engr.NBueno", password: "ownerpassword", adminPasscode: "0987654321", email: "EngineernBueno@gmail.com", status: "approved", role: "owner" },
@@ -1536,6 +1536,38 @@
             document.getElementById('adminRoleDisplay').value = currentUser.role.toUpperCase();
         }
     }
+
+    // EXPOSE FUNCTIONS TO WINDOW OBJECT (Kailangan para sa ES Module onclick attributes)
+    window.handleLogin = handleLogin;
+    window.handleRegister = handleRegister;
+    window.handleResetPassword = handleResetPassword;
+    window.handleLogout = handleLogout;
+    window.switchAuthView = switchAuthView;
+    window.switchTab = switchTab;
+    window.addProduct = addProduct;
+    window.filterProducts = filterProducts;
+    window.deleteProduct = deleteProduct;
+    window.toggleActionTypeForm = toggleActionTypeForm;
+    window.populateExistingProduct = populateExistingProduct;
+    window.recordSaleOrLoss = recordSaleOrLoss;
+    window.generateReport = generateReport;
+    window.exportReportToPDF = exportReportToPDF;
+    window.printReportDocument = printReportDocument;
+    window.unlockAdminAccess = unlockAdminAccess;
+    window.lockAdminAccess = lockAdminAccess;
+    window.changeAdminPassword = changeAdminPassword;
+    window.approveUser = approveUser;
+    window.rejectUser = rejectUser;
+    window.approveRestock = approveRestock;
+    window.rejectRestock = rejectRestock;
+    window.promptApproveRestock = promptApproveRestock;
+    window.promptRejectRestock = promptRejectRestock;
+    window.approveRetailLogRequest = approveRetailLogRequest;
+    window.rejectRetailLogRequest = rejectRetailLogRequest;
+    window.openEditModal = openEditModal;
+    window.closeEditModal = closeEditModal;
+    window.saveEditedUser = saveEditedUser;
+    window.deleteUserAccount = deleteUserAccount;
 </script>
 
 </body>
